@@ -8,9 +8,9 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>骞歌繍澶ц浆鐩樻娊濂?/title>
-    <meta property="og:title" content="骞歌繍澶ц浆鐩樻娊濂?- AI宸ュ叿鍏嶈垂閫?>
-    <meta property="og:description" content="100%涓锛丄I宸ュ叿浠峰€?690鍏冿紝蹇潵璇曡瘯鎵嬫皵锛?>
+    <title>幸运大转盘抽奖</title>
+    <meta property="og:title" content="幸运大转盘抽奖 - AI工具免费送">
+    <meta property="og:description" content="100%中奖！AI工具价值2690元，快来试试手气！">
     <meta property="og:url" content="https://740879648-png.github.io/Aubreylt/">
     <meta property="og:image" content="https://740879648-png.github.io/Aubreylt/qrcode.jpg">
     <style>
@@ -43,36 +43,36 @@
 </head>
 <body>
     <div class="container">
-        <h1>骞歌繍澶ц浆鐩?/h1>
+        <h1>幸运大转盘</h1>
         <div class="wheel-container">
             <div class="pointer"></div>
             <div class="wheel" id="wheel"></div>
-            <button class="center-button" id="spinBtn" onclick="spin()">鎶藉</button>
+            <button class="center-button" id="spinBtn" onclick="spin()">抽奖</button>
         </div>
     </div>
     <div class="modal-overlay" id="modal">
         <div class="modal">
-            <h2>鎭枩涓</h2>
+            <h2>恭喜中奖</h2>
             <div class="prize-name" id="prizeName"></div>
-            <p>璇锋坊鍔犱紒涓氬井淇￠鍙栧鍝?/p>
+            <p>请添加企业微信领取奖品</p>
             <div class="qr-code" id="qrcode">
-                <img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="浜岀淮鐮?>
+                <img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="二维码">
             </div>
-            <p>鎵弿涓婃柟浜岀淮鐮佹坊鍔犲ソ鍙?/p>
-            <p class="tip">璇峰湪24灏忔椂鍐呮坊鍔狅紝閫炬湡浣滃簾</p>
-            <button class="close-btn" onclick="closeModal()">鎴戠煡閬撲簡</button>
+            <p>扫描上方二维码添加好友</p>
+            <p class="tip">请在24小时内添加，逾期作废</p>
+            <button class="close-btn" onclick="closeModal()">我知道了</button>
         </div>
     </div>
     <script>
         var prizes = [
-            {name:'鐗圭瓑濂朶n鍏嶅崟',color:'#ff0055',probability:0},
-            {name:'涓€绛夊\nAI宸ュ叿\n浠峰€?690',color:'#ff4757',probability:1},
-            {name:'浜岀瓑濂朶n灏忕背鎵嬫満\n浠峰€?199',color:'#ffa502',probability:0},
-            {name:'涓夌瓑濂朶n钂告苯閿匼n浠峰€?98',color:'#2ed573',probability:0},
-            {name:'骞歌繍濂朶n50鍏冪孩鍖?,color:'#1e90ff',probability:0},
-            {name:'鍙備笌濂朶n20鍏冪孩鍖?,color:'#a55eea',probability:0},
-            {name:'鍙備笌濂朶n10鍏冪孩鍖?,color:'#ff6b81',probability:0},
-            {name:'璋㈣阿鍙備笌',color:'#747d8c',probability:0}
+            {name:'特等奖\n免单',color:'#ff0055',probability:0},
+            {name:'一等奖\nAI工具\n价值2690',color:'#ff4757',probability:1},
+            {name:'二等奖\n小米手机\n价值1199',color:'#ffa502',probability:0},
+            {name:'三等奖\n蒸汽锅\n价值398',color:'#2ed573',probability:0},
+            {name:'幸运奖\n50元红包',color:'#1e90ff',probability:0},
+            {name:'参与奖\n20元红包',color:'#a55eea',probability:0},
+            {name:'参与奖\n10元红包',color:'#ff6b81',probability:0},
+            {name:'谢谢参与',color:'#747d8c',probability:0}
         ];
         var wheel = document.getElementById('wheel');
         var segmentAngle = 360 / prizes.length;
@@ -98,20 +98,20 @@
             if (checkAlreadySpun()) {
                 var btn = document.getElementById('spinBtn');
                 btn.disabled = true;
-                btn.textContent = '宸叉娊濂?;
+                btn.textContent = '已抽奖';
                 btn.style.background = '#ccc';
             }
         };
         function spin() {
             if (isSpinning) return;
             if (checkAlreadySpun()) {
-                alert('鎮ㄥ凡缁忔娊杩囧浜嗭紝姣忎汉闄愭娊1娆★紒');
+                alert('您已经抽过奖了，每人限抽1次！');
                 return;
             }
             isSpinning = true;
             var btn = document.getElementById('spinBtn');
             btn.disabled = true;
-            btn.textContent = '鎶藉涓?..';
+            btn.textContent = '抽奖中...';
             var random = Math.random();
             var cumulativeProbability = 0;
             var selectedIndex = prizes.length - 1;
@@ -131,7 +131,7 @@
                 showResult(selectedIndex);
                 markAsSpun();
                 btn.disabled = true;
-                btn.textContent = '宸叉娊濂?;
+                btn.textContent = '已抽奖';
                 btn.style.background = '#ccc';
                 isSpinning = false;
             }, 4000);
