@@ -1,170 +1,79 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="renderer" content="webkit">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>幸运大转盘抽奖</title>
-    <meta property="og:title" content="幸运大转盘抽奖 - AI工具免费送">
-    <meta property="og:description" content="100%中奖！AI工具价值2690元，快来试试手气！">
-    <meta property="og:url" content="https://740879648-png.github.io/Aubreylt/">
-    <meta property="og:image" content="https://740879648-png.github.io/Aubreylt/qrcode.jpg">
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
-        .container{text-align:center}
-        h1{color:#fff;margin-bottom:30px;text-shadow:2px 2px 4px rgba(0,0,0,0.3);font-size:2em}
-        .wheel-container{position:relative;width:300px;height:300px;margin:0 auto 30px}
-        .wheel{width:100%;height:100%;border-radius:50%;position:relative;overflow:hidden;box-shadow:0 0 30px rgba(0,0,0,0.3);border:8px solid #fff}
-        .wheel-segment{position:absolute;width:50%;height:50%;transform-origin:100% 100%;clip-path:polygon(0 0,100% 0,100% 100%);display:flex;justify-content:center;align-items:center;padding-left:25px;padding-bottom:15px}
-        .wheel-segment span{transform:rotate(22.5deg);font-weight:bold;color:#fff;text-shadow:1px 1px 2px rgba(0,0,0,0.5);font-size:11px;white-space:nowrap}
-        .pointer{position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:35px solid #ff4757;z-index:10}
-        .pointer::after{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:18px;height:18px;background:#ff4757;border-radius:50%}
-        .center-button{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;background:linear-gradient(145deg,#fff,#f0f0f0);border:none;cursor:pointer;font-size:16px;font-weight:bold;color:#764ba2;box-shadow:0 4px 15px rgba(0,0,0,0.2);z-index:20}
-        .center-button:disabled{opacity:0.7;cursor:not-allowed}
-        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:1000}
-        .modal-overlay.show{display:flex}
-        .modal{background:#fff;border-radius:20px;padding:30px;max-width:380px;width:90%;text-align:center}
-        .modal h2{color:#764ba2;margin-bottom:15px;font-size:1.5em}
-        .modal .prize-name{font-size:1.3em;color:#ff4757;font-weight:bold;margin-bottom:15px}
-        .qr-code{width:180px;height:180px;margin:15px auto;background:#f5f5f5;border-radius:10px;display:flex;justify-content:center;align-items:center}
-        .qr-code img{width:100%;height:100%;object-fit:contain;border-radius:10px}
-        .modal p{color:#666;margin-bottom:15px;line-height:1.5}
-        .modal .wechat-id{background:#f0f0f0;padding:8px 15px;border-radius:8px;margin:10px 0;font-size:1em;color:#333}
-        .modal .tip{color:#ff6b6b;font-size:0.85em;margin-top:8px}
-        .close-btn{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;padding:10px 35px;border-radius:25px;font-size:15px;cursor:pointer;margin-top:15px}
-        .confetti{position:fixed;width:10px;height:10px;animation:confetti-fall 3s linear forwards;z-index:999}
-        @keyframes confetti-fall{0%{transform:translateY(-100vh) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Lucky Draw</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:sans-serif}
+.wrap{text-align:center;background:rgba(255,255,255,0.1);padding:40px;border-radius:20px}
+h1{color:#fff;margin-bottom:20px}
+.box{width:300px;height:300px;background:#fff;border-radius:20px;display:flex;flex-direction:column;justify-content:center;align-items:center;margin:20px auto}
+.btn{background:#ff4757;color:#fff;border:none;padding:20px 50px;font-size:20px;border-radius:50px;cursor:pointer;margin-top:20px}
+.btn:disabled{background:#ccc;cursor:not-allowed}
+.result{color:#333;font-size:18px;margin:20px 0}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:100}
+.modal.show{display:flex}
+.content{background:#fff;padding:40px;border-radius:20px;text-align:center;max-width:90%;width:400px}
+.qr{width:200px;height:200px;margin:20px auto}
+.qr img{width:100%;height:100%;object-fit:contain}
+.tip{color:#ff6b6b;font-size:14px}
+.close{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:12px 40px;border-radius:25px;font-size:16px;cursor:pointer;margin-top:20px}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>幸运大转盘</h1>
-        <div class="wheel-container">
-            <div class="pointer"></div>
-            <div class="wheel" id="wheel"></div>
-            <button class="center-button" id="spinBtn" onclick="spin()">抽奖</button>
-        </div>
-    </div>
-    <div class="modal-overlay" id="modal">
-        <div class="modal">
-            <h2>恭喜中奖</h2>
-            <div class="prize-name" id="prizeName"></div>
-            <p>请添加企业微信领取奖品</p>
-            <div class="qr-code" id="qrcode">
-                <img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="二维码">
-            </div>
-            <p>扫描上方二维码添加好友</p>
-            <p class="tip">请在24小时内添加，逾期作废</p>
-            <button class="close-btn" onclick="closeModal()">我知道了</button>
-        </div>
-    </div>
-    <script>
-        var prizes = [
-            {name:'特等奖\n免单',color:'#ff0055',probability:0},
-            {name:'一等奖\nAI工具\n价值2690',color:'#ff4757',probability:1},
-            {name:'二等奖\n小米手机\n价值1199',color:'#ffa502',probability:0},
-            {name:'三等奖\n蒸汽锅\n价值398',color:'#2ed573',probability:0},
-            {name:'幸运奖\n50元红包',color:'#1e90ff',probability:0},
-            {name:'参与奖\n20元红包',color:'#a55eea',probability:0},
-            {name:'参与奖\n10元红包',color:'#ff6b81',probability:0},
-            {name:'谢谢参与',color:'#747d8c',probability:0}
-        ];
-        var wheel = document.getElementById('wheel');
-        var segmentAngle = 360 / prizes.length;
-        prizes.forEach(function(prize, index) {
-            var segment = document.createElement('div');
-            segment.className = 'wheel-segment';
-            segment.style.background = prize.color;
-            segment.style.transform = 'rotate(' + (index * segmentAngle - 90) + 'deg)';
-            var span = document.createElement('span');
-            span.textContent = prize.name;
-            segment.appendChild(span);
-            wheel.appendChild(segment);
-        });
-        var currentRotation = 0;
-        var isSpinning = false;
-        function checkAlreadySpun() {
-            return localStorage.getItem('lottery_spun') === 'true';
-        }
-        function markAsSpun() {
-            localStorage.setItem('lottery_spun', 'true');
-        }
-        window.onload = function() {
-            if (checkAlreadySpun()) {
-                var btn = document.getElementById('spinBtn');
-                btn.disabled = true;
-                btn.textContent = '已抽奖';
-                btn.style.background = '#ccc';
-            }
-        };
-        function spin() {
-            if (isSpinning) return;
-            if (checkAlreadySpun()) {
-                alert('您已经抽过奖了，每人限抽1次！');
-                return;
-            }
-            isSpinning = true;
-            var btn = document.getElementById('spinBtn');
-            btn.disabled = true;
-            btn.textContent = '抽奖中...';
-            var random = Math.random();
-            var cumulativeProbability = 0;
-            var selectedIndex = prizes.length - 1;
-            for (var i = 0; i < prizes.length; i++) {
-                cumulativeProbability += prizes[i].probability;
-                if (random < cumulativeProbability) {
-                    selectedIndex = i;
-                    break;
-                }
-            }
-            var baseRotation = 360 * 5;
-            var prizeAngle = segmentAngle * selectedIndex;
-            var targetRotation = currentRotation + baseRotation + (360 - prizeAngle - segmentAngle / 2);
-            wheel.style.transform = 'rotate(' + targetRotation + 'deg)';
-            currentRotation = targetRotation;
-            setTimeout(function() {
-                showResult(selectedIndex);
-                markAsSpun();
-                btn.disabled = true;
-                btn.textContent = '已抽奖';
-                btn.style.background = '#ccc';
-                isSpinning = false;
-            }, 4000);
-        }
-        function showResult(index) {
-            var prize = prizes[index];
-            document.getElementById('prizeName').textContent = prize.name.replace(/\n/g, ' - ');
-            document.getElementById('modal').classList.add('show');
-            createConfetti();
-        }
-        function closeModal() {
-            document.getElementById('modal').classList.remove('show');
-        }
-        function createConfetti() {
-            var colors = ['#ff4757','#ffa502','#2ed573','#1e90ff','#a55eea','#ff6b81'];
-            for (var i = 0; i < 50; i++) {
-                (function(j) {
-                    setTimeout(function() {
-                        var confetti = document.createElement('div');
-                        confetti.className = 'confetti';
-                        confetti.style.left = Math.random() * 100 + 'vw';
-                        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                        document.body.appendChild(confetti);
-                        setTimeout(function() { confetti.remove(); }, 3000);
-                    }, j * 50);
-                })(i);
-            }
-        }
-        document.getElementById('modal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
-        });
-    </script>
+<div class="wrap">
+<h1>🎰 Lucky Draw 🎰</h1>
+<div class="box">
+<div class="result" id="result">Click to draw!</div>
+<button class="btn" id="btn" onclick="draw()">DRAW</button>
+</div>
+</div>
+
+<div class="modal" id="modal">
+<div class="content">
+<h2>🎉 Congratulations! 🎉</h2>
+<div class="result" id="prize"></div>
+<div class="qr"><img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="QR"></div>
+<p>Scan QR to claim your prize</p>
+<p class="tip">Valid for 24 hours</p>
+<button class="close" onclick="closeModal()">OK</button>
+</div>
+</div>
+
+<script>
+var drawn = localStorage.getItem('drawn') === 'yes';
+var btn = document.getElementById('btn');
+var result = document.getElementById('result');
+var modal = document.getElementById('modal');
+var prize = document.getElementById('prize');
+
+if(drawn) {
+btn.disabled = true;
+btn.textContent = 'Done';
+result.textContent = 'First Prize - AI Tool (2690)';
+}
+
+function draw() {
+if(drawn) return;
+drawn = true;
+localStorage.setItem('drawn', 'yes');
+btn.disabled = true;
+btn.textContent = 'Drawing...';
+result.textContent = '';
+
+setTimeout(function() {
+result.textContent = 'First Prize - AI Tool!';
+prize.textContent = 'First Prize - AI Tool (Worth 2690)';
+modal.classList.add('show');
+btn.textContent = 'Done';
+}, 2000);
+}
+
+function closeModal() {
+modal.classList.remove('show');
+}
+</script>
 </body>
 </html>
