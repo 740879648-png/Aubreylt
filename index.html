@@ -3,113 +3,106 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>幸运大转盘抽奖</title>
+<title>Lucky Draw</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:sans-serif}
-.wrap{text-align:center;background:rgba(255,255,255,0.1);padding:40px;border-radius:20px}
-h1{color:#fff;margin-bottom:30px;font-size:28px}
+.wrap{text-align:center;padding:30px}
+h1{color:#fff;margin-bottom:25px;font-size:32px}
 
-.wheel-container{position:relative;width:320px;height:320px;margin:0 auto}
+.wheel-box{position:relative;width:320px;height:320px;margin:0 auto}
+.wheel{width:100%;height:100%;border-radius:50%;position:relative;overflow:hidden;box-shadow:0 0 50px rgba(0,0,0,0.5),0 0 100px rgba(255,255,255,0.3);border:12px solid #fff;transition:transform 5s cubic-bezier(0.17,0.67,0.12,0.99)}
+.wheel.glow{animation:glow 2s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 50px rgba(0,0,0,0.5),0 0 80px rgba(255,255,255,0.3)}50%{box-shadow:0 0 70px rgba(0,0,0,0.6),0 0 120px rgba(255,255,255,0.5)}}
 
-.wheel{width:100%;height:100%;border-radius:50%;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,0.4),0 0 80px rgba(255,255,255,0.2);border:10px solid #fff;transition:transform 5s cubic-bezier(0.17,0.67,0.12,0.99)}
-.wheel.spinning{animation:none}
+.seg{position:absolute;width:50%;height:50%;transform-origin:100% 100%;clip-path:polygon(0 0,100% 0,100% 100%);display:flex;justify-content:center;align-items:center;padding-left:30px;padding-bottom:15px}
+.seg img{width:55px;height:55px;object-fit:contain;transform:rotate(22.5deg);filter:drop-shadow(1px 1px 2px rgba(0,0,0,0.5))}
 
-.segment{position:absolute;width:50%;height:50%;transform-origin:100% 100%;clip-path:polygon(0 0,100% 0,100% 100%);display:flex;justify-content:center;align-items:center;padding-left:30px;padding-bottom:20px}
-.segment span{transform:rotate(22.5deg);font-weight:bold;color:#fff;text-shadow:1px 1px 2px rgba(0,0,0,0.5);font-size:11px;white-space:nowrap;line-height:1.3;text-align:center}
+.pointer{position:absolute;top:-25px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:25px solid transparent;border-right:25px solid transparent;border-top:50px solid #ff4757;z-index:10;filter:drop-shadow(0 3px 8px rgba(0,0,0,0.4))}
+.pointer:after{content:'';position:absolute;top:-55px;left:50%;transform:translateX(-50%);width:28px;height:28px;background:#ff4757;border-radius:50%;box-shadow:0 2px 10px rgba(0,0,0,0.3)}
 
-.pointer{position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-top:45px solid #ff4757;z-index:10;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.4))}
-.pointer:after{content:'';position:absolute;top:-50px;left:50%;transform:translateX(-50%);width:24px;height:24px;background:#ff4757;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:95px;height:95px;border-radius:50%;background:linear-gradient(145deg,#fff,#f5f5f5);border:none;cursor:pointer;font-size:22px;font-weight:bold;color:#764ba2;box-shadow:0 6px 25px rgba(0,0,0,0.35);z-index:20;transition:all 0.3s}
+.btn:hover:not(:disabled){transform:translate(-50%,-50%) scale(1.1)}
+.btn:disabled{background:#ccc;color:#888;cursor:not-allowed;transform:translate(-50%,-50%)}
 
-.center-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90px;height:90px;border-radius:50%;background:linear-gradient(145deg,#fff,#f0f0f0);border:none;cursor:pointer;font-size:20px;font-weight:bold;color:#764ba2;box-shadow:0 6px 20px rgba(0,0,0,0.3);z-index:20;transition:all 0.3s}
-.center-btn:hover:not(:disabled){transform:translate(-50%,-50%) scale(1.08);box-shadow:0 8px 30px rgba(0,0,0,0.4)}
-.center-btn:disabled{background:#ccc;color:#666;cursor:not-allowed;transform:translate(-50%,-50%)}
-
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:100;animation:fadeIn 0.3s}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:center;z-index:100;animation:fadeIn 0.3s}
 .modal.show{display:flex}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-.content{background:#fff;padding:50px;border-radius:25px;text-align:center;max-width:90%;width:450px;animation:slideUp 0.5s cubic-bezier(0.17,0.67,0.12,0.99)}
-@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.box{background:#fff;padding:45px;border-radius:25px;text-align:center;max-width:92%;width:460px;animation:slideUp 0.5s cubic-bezier(0.17,0.67,0.12,0.99)}
+@keyframes slideUp{from{transform:translateY(80px);opacity:0}to{transform:translateY(0);opacity:1}}
 
-.content h2{color:#764ba2;margin-bottom:20px;font-size:26px}
-.prize-text{color:#ff4757;font-size:22px;font-weight:bold;margin-bottom:25px}
+.box h2{color:#764ba2;margin-bottom:20px;font-size:28px}
+.prize-img{width:180px;height:180px;margin:25px auto;background:#f8f8f8;border-radius:20px;padding:20px;box-shadow:0 5px 20px rgba(0,0,0,0.1)}
+.prize-img img{width:100%;height:100%;object-fit:contain}
 
-.qr-box{width:280px;height:280px;margin:25px auto;background:#f8f8f8;border-radius:15px;padding:15px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
-.qr-box img{width:100%;height:100%;object-fit:contain;border-radius:10px}
+.qr-box{width:300px;height:300px;margin:25px auto;background:#fff;border-radius:20px;padding:20px;box-shadow:0 5px 25px rgba(0,0,0,0.15)}
+.qr-box img{width:100%;height:100%;object-fit:contain;border-radius:15px}
 
-.content p{color:#555;font-size:16px;margin-bottom:10px}
-.tip{color:#ff6b6b;font-size:14px;margin-top:15px}
-.close-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:14px 50px;border-radius:30px;font-size:18px;cursor:pointer;margin-top:25px;transition:all 0.3s}
-.close-btn:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(102,126,234,0.4)}
-
-@keyframes glow{0%,100%{box-shadow:0 0 40px rgba(255,255,255,0.3)}50%{box-shadow:0 0 60px rgba(255,255,255,0.5)}}
-.wheel{animation:glow 2s infinite}
+.close-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:16px 60px;border-radius:35px;font-size:18px;cursor:pointer;margin-top:30px;transition:all 0.3s}
+.close-btn:hover{transform:scale(1.08);box-shadow:0 8px 30px rgba(102,126,234,0.5)}
 </style>
 </head>
 <body>
 <div class="wrap">
 <h1>🎰 幸运大转盘 🎰</h1>
-<div class="wheel-container">
+<div class="wheel-box">
 <div class="pointer"></div>
 <div class="wheel" id="wheel"></div>
-<button class="center-btn" id="btn" onclick="spin()">抽奖</button>
+<button class="btn" id="btn" onclick="spin()">抽奖</button>
 </div>
 </div>
 
 <div class="modal" id="modal">
-<div class="content">
+<div class="box">
 <h2>🎉 恭喜中奖 🎉</h2>
-<div class="prize-text" id="prize"></div>
-<div class="qr-box"><img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="二维码"></div>
-<p>扫描上方二维码添加实操老师领奖</p>
-<p class="tip">请在24小时内添加，逾期作废</p>
+<div class="prize-img" id="prizeImg"></div>
+<div class="qr-box"><img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="QR"></div>
 <button class="close-btn" onclick="closeModal()">我知道了</button>
 </div>
 </div>
 
 <script>
 var prizes = [
-{name:'特等奖\n免单',color:'#ff0055',prob:0},
-{name:'一等奖\nAI工具\n价值2690',color:'#ff4757',prob:1},
-{name:'二等奖\n小米手机\n价值1199',color:'#ffa502',prob:0},
-{name:'三等奖\n蒸汽锅\n价值398',color:'#2ed573',prob:0},
-{name:'幸运奖\n50元红包',color:'#1e90ff',prob:0},
-{name:'参与奖\n20元红包',color:'#a55eea',prob:0},
-{name:'参与奖\n10元红包',color:'#ff6b81',prob:0},
-{name:'谢谢参与',color:'#747d8c',prob:0}
+{img:'🎁',color:'#ff0055',prob:0},
+{img:'🤖',color:'#ff4757',prob:1},
+{img:'📱',color:'#ffa502',prob:0},
+{img:'🍲',color:'#2ed573',prob:0},
+{img:'💰',color:'#1e90ff',prob:0},
+{img:'🧧',color:'#a55eea',prob:0},
+{img:'🧧',color:'#ff6b81',prob:0},
+{img:'🎯',color:'#747d8c',prob:0}
 ];
 
 var wheel = document.getElementById('wheel');
-var angle = 360 / prizes.length;
+var ang = 360 / prizes.length;
 
 prizes.forEach(function(p, i){
 var seg = document.createElement('div');
-seg.className = 'segment';
+seg.className = 'seg';
 seg.style.background = p.color;
-seg.style.transform = 'rotate(' + (i * angle - 90) + 'deg)';
-var span = document.createElement('span');
-span.innerHTML = p.name.replace(/\n/g,'<br>');
-seg.appendChild(span);
+seg.style.transform = 'rotate(' + (i * ang - 90) + 'deg)';
+var img = document.createElement('div');
+img.style.cssText = 'width:55px;height:55px;display:flex;align-items:center;justify-content:center;font-size:40px;transform:rotate(22.5deg)';
+img.textContent = p.img;
+seg.appendChild(img);
 wheel.appendChild(seg);
 });
 
-var rotation = 0;
+var rot = 0;
 var spinning = false;
 var done = localStorage.getItem('spun') === '1';
 var btn = document.getElementById('btn');
 
 if(done){
 btn.disabled = true;
-btn.textContent = '已抽奖';
+btn.textContent = '✓';
 }
 
 function spin(){
 if(spinning || done) return;
-
-var check = localStorage.getItem('spun');
-if(check === '1'){
-alert('您已抽过奖，每人限抽1次！');
+if(localStorage.getItem('spun') === '1'){
+alert('每人限抽1次');
 return;
 }
 
@@ -117,7 +110,9 @@ spinning = true;
 done = true;
 localStorage.setItem('spun', '1');
 btn.disabled = true;
-btn.textContent = '抽奖中...';
+btn.textContent = '...';
+
+wheel.classList.add('glow');
 
 var rand = Math.random();
 var cum = 0;
@@ -127,16 +122,17 @@ cum += prizes[i].prob;
 if(rand < cum){ idx = i; break; }
 }
 
-var base = 360 * 8;
-var prizeAngle = angle * idx;
-var target = rotation + base + (360 - prizeAngle - angle / 2);
+var base = 360 * 10;
+var prizeAng = ang * idx;
+var target = rot + base + (360 - prizeAng - ang / 2);
 
 wheel.style.transform = 'rotate(' + target + 'deg)';
-rotation = target;
+rot = target;
 
 setTimeout(function(){
-btn.textContent = '已抽奖';
-document.getElementById('prize').innerHTML = prizes[idx].name.replace(/\n/g,'<br>');
+btn.textContent = '✓';
+var prizeDiv = document.getElementById('prizeImg');
+prizeDiv.innerHTML = '<span style="font-size:100px">' + prizes[idx].img + '</span>';
 document.getElementById('modal').classList.add('show');
 spinning = false;
 }, 5000);
