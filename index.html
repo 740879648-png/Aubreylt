@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lucky Draw</title>
+<title>幸运大转盘抽奖</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:sans-serif}
@@ -12,33 +12,34 @@ h1{color:#fff;margin-bottom:20px}
 .box{width:300px;height:300px;background:#fff;border-radius:20px;display:flex;flex-direction:column;justify-content:center;align-items:center;margin:20px auto}
 .btn{background:#ff4757;color:#fff;border:none;padding:20px 50px;font-size:20px;border-radius:50px;cursor:pointer;margin-top:20px}
 .btn:disabled{background:#ccc;cursor:not-allowed}
-.result{color:#333;font-size:18px;margin:20px 0}
+.result{color:#333;font-size:18px;margin:20px 0;font-weight:bold}
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:100}
 .modal.show{display:flex}
 .content{background:#fff;padding:40px;border-radius:20px;text-align:center;max-width:90%;width:400px}
+.content h2{color:#764ba2;margin-bottom:15px}
 .qr{width:200px;height:200px;margin:20px auto}
 .qr img{width:100%;height:100%;object-fit:contain}
-.tip{color:#ff6b6b;font-size:14px}
+.tip{color:#ff6b6b;font-size:14px;margin-top:10px}
 .close{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:12px 40px;border-radius:25px;font-size:16px;cursor:pointer;margin-top:20px}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>🎰 Lucky Draw 🎰</h1>
+<h1>🎰 幸运大转盘 🎰</h1>
 <div class="box">
-<div class="result" id="result">Click to draw!</div>
-<button class="btn" id="btn" onclick="draw()">DRAW</button>
+<div class="result" id="result">点击下方按钮抽奖</div>
+<button class="btn" id="btn" onclick="draw()">抽奖</button>
 </div>
 </div>
 
 <div class="modal" id="modal">
 <div class="content">
-<h2>🎉 Congratulations! 🎉</h2>
+<h2>🎉 恭喜中奖 🎉</h2>
 <div class="result" id="prize"></div>
-<div class="qr"><img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="QR"></div>
-<p>Scan QR to claim your prize</p>
-<p class="tip">Valid for 24 hours</p>
-<button class="close" onclick="closeModal()">OK</button>
+<div class="qr"><img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="二维码"></div>
+<p>扫描上方二维码添加好友领奖</p>
+<p class="tip">请在24小时内添加，逾期作废</p>
+<button class="close" onclick="closeModal()">我知道了</button>
 </div>
 </div>
 
@@ -51,8 +52,8 @@ var prize = document.getElementById('prize');
 
 if(drawn) {
 btn.disabled = true;
-btn.textContent = 'Done';
-result.textContent = 'First Prize - AI Tool (2690)';
+btn.textContent = '已抽奖';
+result.textContent = '一等奖 - AI工具（价值2690元）';
 }
 
 function draw() {
@@ -60,14 +61,14 @@ if(drawn) return;
 drawn = true;
 localStorage.setItem('drawn', 'yes');
 btn.disabled = true;
-btn.textContent = 'Drawing...';
+btn.textContent = '抽奖中...';
 result.textContent = '';
 
 setTimeout(function() {
-result.textContent = 'First Prize - AI Tool!';
-prize.textContent = 'First Prize - AI Tool (Worth 2690)';
+result.textContent = '一等奖 - AI工具！';
+prize.textContent = '一等奖 - AI工具（价值2690元）';
 modal.classList.add('show');
-btn.textContent = 'Done';
+btn.textContent = '已抽奖';
 }, 2000);
 }
 
