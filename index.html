@@ -3,146 +3,211 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lucky Draw</title>
+<title>幸运老虎机</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:sans-serif}
-.wrap{text-align:center;padding:30px}
-h1{color:#fff;margin-bottom:25px;font-size:32px}
+body{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:'Microsoft YaHei',sans-serif}
+.wrap{text-align:center;padding:20px}
 
-.wheel-box{position:relative;width:320px;height:320px;margin:0 auto}
-.wheel{width:100%;height:100%;border-radius:50%;position:relative;overflow:hidden;box-shadow:0 0 50px rgba(0,0,0,0.5),0 0 100px rgba(255,255,255,0.3);border:12px solid #fff;transition:transform 5s cubic-bezier(0.17,0.67,0.12,0.99)}
-.wheel.glow{animation:glow 2s infinite}
-@keyframes glow{0%,100%{box-shadow:0 0 50px rgba(0,0,0,0.5),0 0 80px rgba(255,255,255,0.3)}50%{box-shadow:0 0 70px rgba(0,0,0,0.6),0 0 120px rgba(255,255,255,0.5)}}
+h1{color:#ffd700;margin-bottom:30px;font-size:36px;text-shadow:0 0 20px rgba(255,215,0,0.5)}
 
-.seg{position:absolute;width:50%;height:50%;transform-origin:100% 100%;clip-path:polygon(0 0,100% 0,100% 100%);display:flex;justify-content:center;align-items:center;padding-left:30px;padding-bottom:15px}
-.seg img{width:55px;height:55px;object-fit:contain;transform:rotate(22.5deg);filter:drop-shadow(1px 1px 2px rgba(0,0,0,0.5))}
+.slot-machine{position:relative;width:350px;height:280px;background:linear-gradient(180deg,#2d2d44,#1a1a2e);border-radius:20px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,0.5),inset 0 2px 0 rgba(255,255,255,0.1);border:4px solid #ffd700}
 
-.pointer{position:absolute;top:-25px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:25px solid transparent;border-right:25px solid transparent;border-top:50px solid #ff4757;z-index:10;filter:drop-shadow(0 3px 8px rgba(0,0,0,0.4))}
-.pointer:after{content:'';position:absolute;top:-55px;left:50%;transform:translateX(-50%);width:28px;height:28px;background:#ff4757;border-radius:50%;box-shadow:0 2px 10px rgba(0,0,0,0.3)}
+.window{position:relative;width:100%;height:180px;background:#000;border-radius:12px;overflow:hidden;display:flex;justify-content:center;align-items:center;box-shadow:inset 0 0 30px rgba(255,215,0,0.2)}
 
-.btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:95px;height:95px;border-radius:50%;background:linear-gradient(145deg,#fff,#f5f5f5);border:none;cursor:pointer;font-size:22px;font-weight:bold;color:#764ba2;box-shadow:0 6px 25px rgba(0,0,0,0.35);z-index:20;transition:all 0.3s}
-.btn:hover:not(:disabled){transform:translate(-50%,-50%) scale(1.1)}
-.btn:disabled{background:#ccc;color:#888;cursor:not-allowed;transform:translate(-50%,-50%)}
+.reels{display:flex;gap:10px;justify-content:center}
+.reel{width:90px;height:120px;position:relative;overflow:hidden;background:#111;border-radius:8px;border:2px solid #ffd700}
+.reel-inner{position:absolute;width:100%;transition:top 0.1s ease-out}
+.reel-item{width:100%;height:120px;display:flex;justify-content:center;align-items:center;background:linear-gradient(180deg,#222,#111)}
+.reel-item img{width:80px;height:80px;object-fit:contain}
 
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:center;z-index:100;animation:fadeIn 0.3s}
+.line{position:absolute;top:50%;left:5%;width:90%;height:4px;background:rgba(255,215,0,0.6);box-shadow:0 0 10px rgba(255,215,0,0.8);z-index:10}
+
+.handle{position:absolute;right:-25px;top:50%;width:30px;height:120px;background:linear-gradient(90deg,#c0c0c0,#808080);border-radius:0 15px 15px 0;transform:translateY(-50%);cursor:pointer;transition:transform 0.3s}
+.handle:after{content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:20px;height:20px;background:#ffd700;border-radius:50%;box-shadow:0 0 10px rgba(255,215,0,0.5)}
+.handle.pull{transform:translateY(-30%)}
+
+.btn{width:200px;padding:18px;margin:30px auto 0;background:linear-gradient(180deg,#ffd700,#ff8c00);border:none;border-radius:50px;font-size:22px;font-weight:bold;color:#1a1a2e;cursor:pointer;box-shadow:0 8px 25px rgba(255,140,0,0.4);transition:all 0.3s}
+.btn:hover:not(:disabled){transform:scale(1.05);box-shadow:0 10px 35px rgba(255,140,0,0.6)}
+.btn:disabled{background:#666;color:#999;cursor:not-allowed;transform:none}
+
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0, 0, 0.9);justify-content:center;align-items:center;z-index:100;animation:fadeIn 0.3s}
 .modal.show{display:flex}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-.box{background:#fff;padding:45px;border-radius:25px;text-align:center;max-width:92%;width:460px;animation:slideUp 0.5s cubic-bezier(0.17,0.67,0.12,0.99)}
-@keyframes slideUp{from{transform:translateY(80px);opacity:0}to{transform:translateY(0);opacity:1}}
+.content{background:#fff;padding:40px;border-radius:25px;text-align:center;max-width:92%;width:480px;animation:bounceIn 0.5s}
+@keyframes bounceIn{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 
-.box h2{color:#764ba2;margin-bottom:20px;font-size:28px}
-.prize-img{width:180px;height:180px;margin:25px auto;background:#f8f8f8;border-radius:20px;padding:20px;box-shadow:0 5px 20px rgba(0,0,0,0.1)}
+.content h2{color:#ff8c00;font-size:32px;margin-bottom:15px}
+.win-text{color:#ff4757;font-size:28px;font-weight:bold;margin:20px 0}
+
+.prize-img{width:220px;height:220px;margin:20px auto;background:#f8f8f8;border-radius:20px;padding:15px;box-shadow:0 8px 30px rgba(0,0,0,0.15)}
 .prize-img img{width:100%;height:100%;object-fit:contain}
 
-.qr-box{width:300px;height:300px;margin:25px auto;background:#fff;border-radius:20px;padding:20px;box-shadow:0 5px 25px rgba(0,0,0,0.15)}
-.qr-box img{width:100%;height:100%;object-fit:contain;border-radius:15px}
+.qr-box{width:260px;height:260px;margin:25px auto;background:#fff;border-radius:20px;padding:15px;box-shadow:0 8px 30px rgba(0,0,0,0.2)}
+.qr-box img{width:100%;height:100%;object-fit:contain;border-radius:12px}
 
-.close-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:16px 60px;border-radius:35px;font-size:18px;cursor:pointer;margin-top:30px;transition:all 0.3s}
-.close-btn:hover{transform:scale(1.08);box-shadow:0 8px 30px rgba(102,126,234,0.5)}
+.qr-tips{display:flex;justify-content:center;gap:10px;margin-top:15px}
+.save-btn{background:#4CAF50;color:#fff;border:none;padding:10px 25px;border-radius:25px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.save-btn:hover{background:#45a049}
+
+.content p{color:#666;font-size:16px;margin:15px 0}
+.tip{color:#ff6b6b;font-size:14px}
+
+.close-btn{background:linear-gradient(180deg,#ff8c00,#ff4757);color:#fff;border:none;padding:15px 50px;border-radius:35px;font-size:18px;cursor:pointer;margin-top:25px;transition:all 0.3s}
+.close-btn:hover{transform:scale(1.08)}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>🎰 幸运大转盘 🎰</h1>
-<div class="wheel-box">
-<div class="pointer"></div>
-<div class="wheel" id="wheel"></div>
-<button class="btn" id="btn" onclick="spin()">抽奖</button>
+<h1>🎰 老虎机抽奖 🎰</h1>
+<div class="slot-machine">
+<div class="window">
+<div class="line"></div>
+<div class="reels">
+<div class="reel"><div class="reel-inner" id="reel1"></div></div>
+<div class="reel"><div class="reel-inner" id="reel2"></div></div>
+<div class="reel"><div class="reel-inner" id="reel3"></div></div>
 </div>
+</div>
+<div class="handle" id="handle" onclick="spin()"></div>
+</div>
+<button class="btn" id="btn" onclick="spin()">开始抽奖</button>
 </div>
 
 <div class="modal" id="modal">
-<div class="box">
+<div class="content">
 <h2>🎉 恭喜中奖 🎉</h2>
+<div class="win-text" id="winText"></div>
 <div class="prize-img" id="prizeImg"></div>
-<div class="qr-box"><img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="QR"></div>
+<div class="qr-box"><img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="二维码"></div>
+<div class="qr-tips">
+<button class="save-btn" onclick="saveQR()">⬇ 保存二维码</button>
+</div>
+<p>扫描二维码添加实操老师领奖</p>
+<p class="tip">24小时内有效，逾期作废</p>
 <button class="close-btn" onclick="closeModal()">我知道了</button>
 </div>
 </div>
 
 <script>
 var prizes = [
-{img:'🎁',color:'#ff0055',prob:0},
-{img:'🤖',color:'#ff4757',prob:1},
-{img:'📱',color:'#ffa502',prob:0},
-{img:'🍲',color:'#2ed573',prob:0},
-{img:'💰',color:'#1e90ff',prob:0},
-{img:'🧧',color:'#a55eea',prob:0},
-{img:'🧧',color:'#ff6b81',prob:0},
-{img:'🎯',color:'#747d8c',prob:0}
+{img:'https://740879648-png.github.io/Aubreylt/qrcode.jpg',name:'AI工具\n价值2690元',prob:1,emoji:'🤖'},
+{img:'',name:'小米手机\n价值1199元',prob:0,emoji:'📱'},
+{img:'',name:'蒸汽锅\n价值398元',prob:0,emoji:'🍲'},
+{img:'',name:'50元红包',prob:0,emoji:'💰'},
+{img:'',name:'20元红包',prob:0,emoji:'🧧'},
+{img:'',name:'10元红包',prob:0,emoji:'🧧'},
+{img:'',name:'谢谢参与',prob:0,emoji:'🎯'}
 ];
 
-var wheel = document.getElementById('wheel');
-var ang = 360 / prizes.length;
-
-prizes.forEach(function(p, i){
-var seg = document.createElement('div');
-seg.className = 'seg';
-seg.style.background = p.color;
-seg.style.transform = 'rotate(' + (i * ang - 90) + 'deg)';
-var img = document.createElement('div');
-img.style.cssText = 'width:55px;height:55px;display:flex;align-items:center;justify-content:center;font-size:40px;transform:rotate(22.5deg)';
-img.textContent = p.img;
-seg.appendChild(img);
-wheel.appendChild(seg);
-});
-
-var rot = 0;
-var spinning = false;
-var done = localStorage.getItem('spun') === '1';
+var emojis = ['🤖','📱','🍲','💰','🧧','🧧','🎯','⭐','🎁','💎'];
+var reel1 = document.getElementById('reel1');
+var reel2 = document.getElementById('reel2');
+var reel3 = document.getElementById('reel3');
+var handle = document.getElementById('handle');
 var btn = document.getElementById('btn');
 
-if(done){
-btn.disabled = true;
-btn.textContent = '✓';
+function initReels(){
+for(var i=0;i<10;i++){
+reel1.innerHTML += '<div class="reel-item"><span style="font-size:45px">'+emojis[Math.floor(Math.random()*emojis.length)]+'</span></div>';
+reel2.innerHTML += '<div class="reel-item"><span style="font-size:45px">'+emojis[Math.floor(Math.random()*emojis.length)]+'</span></div>';
+reel3.innerHTML += '<div class="reel-item"><span style="font-size:45px">'+emojis[Math.floor(Math.random()*emojis.length)]+'</span></div>';
 }
+reel1.style.top = '0';
+reel2.style.top = '0';
+reel3.style.top = '0';
+}
+initReels();
+
+var spinning = false;
+var done = localStorage.getItem('spun') === '1';
+if(done){btn.disabled = true;btn.textContent = '已抽奖';}
 
 function spin(){
 if(spinning || done) return;
 if(localStorage.getItem('spun') === '1'){
-alert('每人限抽1次');
-return;
+alert('每人限抽1次！');return;
 }
-
 spinning = true;
 done = true;
 localStorage.setItem('spun', '1');
 btn.disabled = true;
-btn.textContent = '...';
-
-wheel.classList.add('glow');
+btn.textContent = '转动中...';
+handle.classList.add('pull');
 
 var rand = Math.random();
 var cum = 0;
 var idx = prizes.length - 1;
-for(var i = 0; i < prizes.length; i++){
+for(var i=0;i<prizes.length;i++){
 cum += prizes[i].prob;
-if(rand < cum){ idx = i; break; }
+if(rand < cum){idx = i;break;}
 }
 
-var base = 360 * 10;
-var prizeAng = ang * idx;
-var target = rot + base + (360 - prizeAng - ang / 2);
+spinReels(idx);
+}
 
-wheel.style.transform = 'rotate(' + target + 'deg)';
-rot = target;
+function spinReels(winnnerIdx){
+var winEmoji = prizes[winnnerIdx].emoji || '🎉';
+var stop1 = false, stop2 = false, stop3 = false;
+var count = 0;
+
+var int1 = setInterval(function(){
+var r1 = Math.floor(Math.random() * emojis.length);
+reel1.style.top = -(r1 * 120) + 'px';
+if(Math.random() > 0.85){stop1 = true;clearInterval(int1);count++;}
+if(count >= 3) clearInterval(int1);
+},100);
 
 setTimeout(function(){
-btn.textContent = '✓';
-var prizeDiv = document.getElementById('prizeImg');
-prizeDiv.innerHTML = '<span style="font-size:100px">' + prizes[idx].img + '</span>';
-document.getElementById('modal').classList.add('show');
+var int2 = setInterval(function(){
+var r2 = Math.floor(Math.random() * emojis.length);
+reel2.style.top = -(r2 * 120) + 'px';
+if(Math.random() > 0.7){stop2 = true;clearInterval(int2);count++;}
+if(count >= 3) clearInterval(int2);
+},120);
+},800);
+
+setTimeout(function(){
+var int3 = setInterval(function(){
+var r3 = Math.floor(Math.random() * emojis.length);
+reel3.style.top = -(r3 * 120) + 'px';
+if(count >= 3){clearInterval(int3);}
+count++;
+if(count >= 3){
+setTimeout(showResult,500,winnnerIdx);
+}
+},160);
+},1600);
+}
+
+function showResult(idx){
 spinning = false;
-}, 5000);
+handle.classList.remove('pull');
+btn.textContent = '已抽奖';
+var p = prizes[idx];
+document.getElementById('winText').innerHTML = p.name.replace(/\n/g,'<br>');
+var prizeImg = document.getElementById('prizeImg');
+if(p.img && p.img !== ''){
+prizeImg.innerHTML = '<img src="'+p.img+'" alt="奖品">';
+}else{
+prizeImg.innerHTML = '<span style="font-size:80px">'+p.emoji+'</span>';
+}
+document.getElementById('modal').classList.add('show');
+}
+
+function saveQR(){
+var qrImg = document.querySelector('.qr-box img');
+var link = document.createElement('a');
+link.href = qrImg.src;
+link.download = 'wechat-qrcode.jpg';
+link.click();
 }
 
 function closeModal(){
 document.getElementById('modal').classList.remove('show');
 }
-
-document.getElementById('modal').addEventListener('click', function(e){
+document.getElementById('modal').addEventListener('click',function(e){
 if(e.target === this) closeModal();
 });
 </script>
