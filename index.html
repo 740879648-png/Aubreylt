@@ -4,473 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- 寰俊鍒嗕韩浼樺寲 -->
     <meta name="renderer" content="webkit">
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="x5-orientation" content="portrait">
-    <meta name="x5-fullscreen" content="true">
-    <meta name="browsermode" content="application">
-    <title>馃巵 骞歌繍澶ц浆鐩樻娊濂?/title>
-    <!-- 寰俊鍒嗕韩鏍囬鍜屾弿杩?-->
-    <meta property="og:type" content="activity">
-    <meta property="og:title" content="馃巵 骞歌繍澶ц浆鐩樻娊濂?- AI宸ュ叿鍏嶈垂閫?>
+    <title>骞歌繍澶ц浆鐩樻娊濂?/title>
+    <meta property="og:title" content="骞歌繍澶ц浆鐩樻娊濂?- AI宸ュ叿鍏嶈垂閫?>
     <meta property="og:description" content="100%涓锛丄I宸ュ叿浠峰€?690鍏冿紝蹇潵璇曡瘯鎵嬫皵锛?>
     <meta property="og:url" content="https://740879648-png.github.io/Aubreylt/">
     <meta property="og:image" content="https://740879648-png.github.io/Aubreylt/qrcode.jpg">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="馃巵 骞歌繍澶ц浆鐩樻娊濂?- AI宸ュ叿鍏嶈垂閫?>
-    <meta name="twitter:description" content="100%涓锛丄I宸ュ叿浠峰€?690鍏冿紝蹇潵璇曡瘯鎵嬫皵锛?>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            text-align: center;
-        }
-
-        h1 {
-            color: white;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            font-size: 2.5em;
-        }
-
-        .wheel-container {
-            position: relative;
-            width: 320px;
-            height: 320px;
-            margin: 0 auto 30px;
-        }
-
-        .wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(0,0,0,0.3), 0 0 60px rgba(255,255,255,0.2);
-            border: 8px solid #fff;
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-        }
-
-        .wheel.spinning {
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-        }
-
-        .wheel-segment {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            transform-origin: 100% 100%;
-            clip-path: polygon(0 0, 100% 0, 100% 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-left: 30px;
-            padding-bottom: 20px;
-        }
-
-        .wheel-segment span {
-            transform: rotate(22.5deg);
-            font-weight: bold;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            font-size: 12px;
-            white-space: nowrap;
-        }
-
-        .pointer {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 40px solid #ff4757;
-            z-index: 10;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-        }
-
-        .pointer::after {
-            content: '';
-            position: absolute;
-            top: -45px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 20px;
-            background: #ff4757;
-            border-radius: 50%;
-        }
-
-        .center-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #fff, #f0f0f0);
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            color: #764ba2;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            z-index: 20;
-            transition: all 0.3s;
-        }
-
-        .center-button:hover:not(:disabled) {
-            transform: translate(-50%, -50%) scale(1.05);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
-
-        .center-button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        /* 寮圭獥鏍峰紡 */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s;
-        }
-
-        .modal-overlay.show {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            animation: slideUp 0.4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal h2 {
-            color: #764ba2;
-            margin-bottom: 15px;
-            font-size: 1.8em;
-        }
-
-        .modal .prize-name {
-            font-size: 1.5em;
-            color: #ff4757;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .qr-code {
-            width: 200px;
-            height: 200px;
-            margin: 20px auto;
-            background: #f5f5f5;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #999;
-            border: 2px dashed #ddd;
-        }
-
-        .qr-code img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 10px;
-        }
-
-        .modal p {
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        .modal .wechat-id {
-            background: #f0f0f0;
-            padding: 10px 20px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-size: 1.1em;
-            color: #333;
-        }
-
-        .modal .tip {
-            color: #ff6b6b;
-            font-size: 0.9em;
-            margin-top: 10px;
-        }
-
-        .close-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 40px;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .close-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: #f00;
-            animation: confetti-fall 3s linear forwards;
-            z-index: 999;
-        }
-
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+        .container{text-align:center}
+        h1{color:#fff;margin-bottom:30px;text-shadow:2px 2px 4px rgba(0,0,0,0.3);font-size:2em}
+        .wheel-container{position:relative;width:300px;height:300px;margin:0 auto 30px}
+        .wheel{width:100%;height:100%;border-radius:50%;position:relative;overflow:hidden;box-shadow:0 0 30px rgba(0,0,0,0.3);border:8px solid #fff}
+        .wheel-segment{position:absolute;width:50%;height:50%;transform-origin:100% 100%;clip-path:polygon(0 0,100% 0,100% 100%);display:flex;justify-content:center;align-items:center;padding-left:25px;padding-bottom:15px}
+        .wheel-segment span{transform:rotate(22.5deg);font-weight:bold;color:#fff;text-shadow:1px 1px 2px rgba(0,0,0,0.5);font-size:11px;white-space:nowrap}
+        .pointer{position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:35px solid #ff4757;z-index:10}
+        .pointer::after{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:18px;height:18px;background:#ff4757;border-radius:50%}
+        .center-button{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;background:linear-gradient(145deg,#fff,#f0f0f0);border:none;cursor:pointer;font-size:16px;font-weight:bold;color:#764ba2;box-shadow:0 4px 15px rgba(0,0,0,0.2);z-index:20}
+        .center-button:disabled{opacity:0.7;cursor:not-allowed}
+        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:1000}
+        .modal-overlay.show{display:flex}
+        .modal{background:#fff;border-radius:20px;padding:30px;max-width:380px;width:90%;text-align:center}
+        .modal h2{color:#764ba2;margin-bottom:15px;font-size:1.5em}
+        .modal .prize-name{font-size:1.3em;color:#ff4757;font-weight:bold;margin-bottom:15px}
+        .qr-code{width:180px;height:180px;margin:15px auto;background:#f5f5f5;border-radius:10px;display:flex;justify-content:center;align-items:center}
+        .qr-code img{width:100%;height:100%;object-fit:contain;border-radius:10px}
+        .modal p{color:#666;margin-bottom:15px;line-height:1.5}
+        .modal .wechat-id{background:#f0f0f0;padding:8px 15px;border-radius:8px;margin:10px 0;font-size:1em;color:#333}
+        .modal .tip{color:#ff6b6b;font-size:0.85em;margin-top:8px}
+        .close-btn{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;padding:10px 35px;border-radius:25px;font-size:15px;cursor:pointer;margin-top:15px}
+        .confetti{position:fixed;width:10px;height:10px;animation:confetti-fall 3s linear forwards;z-index:999}
+        @keyframes confetti-fall{0%{transform:translateY(-100vh) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>馃幇 骞歌繍澶ц浆鐩?馃幇</h1>
-        
+        <h1>骞歌繍澶ц浆鐩?/h1>
         <div class="wheel-container">
             <div class="pointer"></div>
             <div class="wheel" id="wheel"></div>
             <button class="center-button" id="spinBtn" onclick="spin()">鎶藉</button>
         </div>
     </div>
-
-    <!-- 涓寮圭獥 -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
-            <h2>馃帀 鎭枩涓 馃帀</h2>
+            <h2>鎭枩涓</h2>
             <div class="prize-name" id="prizeName"></div>
             <p>璇锋坊鍔犱紒涓氬井淇￠鍙栧鍝?/p>
-            
             <div class="qr-code" id="qrcode">
-                <!-- 浼佷笟寰俊浜岀淮鐮佸浘鐗?-->
-                <!-- 璇锋浛鎹负浣犵殑浜岀淮鐮佸浘鐗嘦RL -->
-                <span style="color: #999;">浼佷笟寰俊浜岀淮鐮?/span>
+                <img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="浜岀淮鐮?>
             </div>
-            
-            <p>鎵弿涓婃柟浜岀淮鐮?br>鎴栨悳绱紒涓氬井淇D娣诲姞</p>
-            
-            <div class="wechat-id" id="wechatId">
-                <!-- 璇锋浛鎹负浣犵殑浼佷笟寰俊ID -->
-                寰呭～鍐?            </div>
-            
-            <p class="tip">馃挕 璇峰湪24灏忔椂鍐呮坊鍔狅紝閫炬湡浣滃簾</p>
-            
+            <p>鎵弿涓婃柟浜岀淮鐮佹坊鍔犲ソ鍙?/p>
+            <p class="tip">璇峰湪24灏忔椂鍐呮坊鍔狅紝閫炬湡浣滃簾</p>
             <button class="close-btn" onclick="closeModal()">鎴戠煡閬撲簡</button>
         </div>
     </div>
-
     <script>
-        // ============ 閰嶇疆鍖哄煙 ============
-        // 濂栧搧鍒楄〃锛堝彲淇敼锛?        const prizes = [
-            { name: '馃巵鐗圭瓑濂朶n鍏嶅崟', color: '#ff0055', probability: 0.00 },
-            { name: '馃巵涓€绛夊\nAI宸ュ叿\n浠峰€?690', color: '#ff4757', probability: 1.00 },
-            { name: '馃巵浜岀瓑濂朶n灏忕背鎵嬫満\n浠峰€?199', color: '#ffa502', probability: 0.00 },
-            { name: '馃巵涓夌瓑濂朶n钂告苯閿匼n浠峰€?98', color: '#2ed573', probability: 0.00 },
-            { name: '骞歌繍濂朶n50鍏冪孩鍖?, color: '#1e90ff', probability: 0.00 },
-            { name: '鍙備笌濂朶n20鍏冪孩鍖?, color: '#a55eea', probability: 0.00 },
-            { name: '鍙備笌濂朶n10鍏冪孩鍖?, color: '#ff6b81', probability: 0.00 },
-            { name: '璋㈣阿鍙備笌', color: '#747d8c', probability: 0.00 }
+        var prizes = [
+            {name:'鐗圭瓑濂朶n鍏嶅崟',color:'#ff0055',probability:0},
+            {name:'涓€绛夊\nAI宸ュ叿\n浠峰€?690',color:'#ff4757',probability:1},
+            {name:'浜岀瓑濂朶n灏忕背鎵嬫満\n浠峰€?199',color:'#ffa502',probability:0},
+            {name:'涓夌瓑濂朶n钂告苯閿匼n浠峰€?98',color:'#2ed573',probability:0},
+            {name:'骞歌繍濂朶n50鍏冪孩鍖?,color:'#1e90ff',probability:0},
+            {name:'鍙備笌濂朶n20鍏冪孩鍖?,color:'#a55eea',probability:0},
+            {name:'鍙備笌濂朶n10鍏冪孩鍖?,color:'#ff6b81',probability:0},
+            {name:'璋㈣阿鍙備笌',color:'#747d8c',probability:0}
         ];
-
-        // 浼佷笟寰俊閰嶇疆锛堣淇敼锛?        const wechatConfig = {
-            qrcodeUrl: 'https://740879648-png.github.io/Aubreylt/qrcode.jpg',
-            wechatId: ''   // 浼佷笟寰俊ID锛堝彲閫夛級
-        };
-        // =================================
-
-        // 鍒濆鍖栬浆鐩?        const wheel = document.getElementById('wheel');
-        const segmentAngle = 360 / prizes.length;
-
-        prizes.forEach((prize, index) => {
-            const segment = document.createElement('div');
+        var wheel = document.getElementById('wheel');
+        var segmentAngle = 360 / prizes.length;
+        prizes.forEach(function(prize, index) {
+            var segment = document.createElement('div');
             segment.className = 'wheel-segment';
             segment.style.background = prize.color;
-            segment.style.transform = `rotate(${index * segmentAngle - 90}deg)`;
-            
-            const span = document.createElement('span');
+            segment.style.transform = 'rotate(' + (index * segmentAngle - 90) + 'deg)';
+            var span = document.createElement('span');
             span.textContent = prize.name;
             segment.appendChild(span);
             wheel.appendChild(segment);
         });
-
-        let currentRotation = 0;
-        let isSpinning = false;
-
-        // 妫€鏌ユ槸鍚﹀凡鎶藉
+        var currentRotation = 0;
+        var isSpinning = false;
         function checkAlreadySpun() {
             return localStorage.getItem('lottery_spun') === 'true';
         }
-
         function markAsSpun() {
             localStorage.setItem('lottery_spun', 'true');
         }
-
-        // 椤甸潰鍔犺浇鏃舵鏌?        window.onload = function() {
+        window.onload = function() {
             if (checkAlreadySpun()) {
-                const btn = document.getElementById('spinBtn');
+                var btn = document.getElementById('spinBtn');
                 btn.disabled = true;
                 btn.textContent = '宸叉娊濂?;
                 btn.style.background = '#ccc';
             }
         };
-
         function spin() {
             if (isSpinning) return;
-            
-            // 妫€鏌ユ槸鍚﹀凡鎶藉
             if (checkAlreadySpun()) {
                 alert('鎮ㄥ凡缁忔娊杩囧浜嗭紝姣忎汉闄愭娊1娆★紒');
                 return;
             }
-            
             isSpinning = true;
-            
-            const btn = document.getElementById('spinBtn');
+            var btn = document.getElementById('spinBtn');
             btn.disabled = true;
             btn.textContent = '鎶藉涓?..';
-
-            // 鏍规嵁姒傜巼璁＄畻涓缁撴灉
-            const random = Math.random();
-            let cumulativeProbability = 0;
-            let selectedIndex = prizes.length - 1;
-
-            for (let i = 0; i < prizes.length; i++) {
+            var random = Math.random();
+            var cumulativeProbability = 0;
+            var selectedIndex = prizes.length - 1;
+            for (var i = 0; i < prizes.length; i++) {
                 cumulativeProbability += prizes[i].probability;
                 if (random < cumulativeProbability) {
                     selectedIndex = i;
                     break;
                 }
             }
-
-            // 璁＄畻鏃嬭浆瑙掑害
-            const baseRotation = 360 * 5; // 杞?鍦?            const prizeAngle = segmentAngle * selectedIndex;
-            const targetRotation = currentRotation + baseRotation + (360 - prizeAngle - segmentAngle / 2);
-
-            wheel.style.transform = `rotate(${targetRotation}deg)`;
+            var baseRotation = 360 * 5;
+            var prizeAngle = segmentAngle * selectedIndex;
+            var targetRotation = currentRotation + baseRotation + (360 - prizeAngle - segmentAngle / 2);
+            wheel.style.transform = 'rotate(' + targetRotation + 'deg)';
             currentRotation = targetRotation;
-
-            // 4绉掑悗鏄剧ず缁撴灉
-            setTimeout(() => {
+            setTimeout(function() {
                 showResult(selectedIndex);
-                markAsSpun(); // 鏍囪宸叉娊濂?                btn.disabled = true;
+                markAsSpun();
+                btn.disabled = true;
                 btn.textContent = '宸叉娊濂?;
                 btn.style.background = '#ccc';
                 isSpinning = false;
             }, 4000);
         }
-
         function showResult(index) {
-            const prize = prizes[index];
-            document.getElementById('prizeName').textContent = prize.name;
-            
-            // 璁剧疆浜岀淮鐮?            const qrcodeEl = document.getElementById('qrcode');
-            if (wechatConfig.qrcodeUrl) {
-                qrcodeEl.innerHTML = `<img src="${wechatConfig.qrcodeUrl}" alt="浼佷笟寰俊浜岀淮鐮?>`;
-            }
-            
-            // 璁剧疆寰俊ID
-            if (wechatConfig.wechatId) {
-                document.getElementById('wechatId').textContent = wechatConfig.wechatId;
-            }
-            
-            // 鏄剧ず寮圭獥
+            var prize = prizes[index];
+            document.getElementById('prizeName').textContent = prize.name.replace(/\n/g, ' - ');
             document.getElementById('modal').classList.add('show');
-            
-            // 鎾掕姳鏁堟灉
             createConfetti();
         }
-
         function closeModal() {
             document.getElementById('modal').classList.remove('show');
         }
-
-        // 鎾掕姳鏁堟灉
         function createConfetti() {
-            const colors = ['#ff4757', '#ffa502', '#2ed573', '#1e90ff', '#a55eea', '#ff6b81'];
-            
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + 'vw';
-                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                    document.body.appendChild(confetti);
-                    
-                    setTimeout(() => confetti.remove(), 3000);
-                }, i * 50);
+            var colors = ['#ff4757','#ffa502','#2ed573','#1e90ff','#a55eea','#ff6b81'];
+            for (var i = 0; i < 50; i++) {
+                (function(j) {
+                    setTimeout(function() {
+                        var confetti = document.createElement('div');
+                        confetti.className = 'confetti';
+                        confetti.style.left = Math.random() * 100 + 'vw';
+                        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                        document.body.appendChild(confetti);
+                        setTimeout(function() { confetti.remove(); }, 3000);
+                    }, j * 50);
+                })(i);
             }
         }
-
-        // 鐐瑰嚮閬僵鍏抽棴寮圭獥
         document.getElementById('modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
+            if (e.target === this) closeModal();
         });
     </script>
 </body>
