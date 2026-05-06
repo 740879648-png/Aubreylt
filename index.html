@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>幸运大转盘抽奖</title>
+<title>&#x5e78;&#x8fd0;&#x5927;&#x8f6c;&#x76d8;&#x62bd;&#x5956;</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:sans-serif}
@@ -25,21 +25,21 @@ h1{color:#fff;margin-bottom:20px}
 </head>
 <body>
 <div class="wrap">
-<h1>🎰 幸运大转盘 🎰</h1>
+<h1>&#x1f3b0; &#x5e78;&#x8fd0;&#x5927;&#x8f6c;&#x76d8; &#x1f3b0;</h1>
 <div class="box">
-<div class="result" id="result">点击下方按钮抽奖</div>
-<button class="btn" id="btn" onclick="draw()">抽奖</button>
+<div class="result" id="result">&#x70b9;&#x51fb;&#x4e0b;&#x65b9;&#x6309;&#x94ae;&#x62bd;&#x5956;</div>
+<button class="btn" id="btn" onclick="draw()">&#x62bd;&#x5956;</button>
 </div>
 </div>
 
 <div class="modal" id="modal">
 <div class="content">
-<h2>🎉 恭喜中奖 🎉</h2>
+<h2>&#x1f389; &#x606d;&#x559c;&#x4e2d;&#x5956; &#x1f389;</h2>
 <div class="result" id="prize"></div>
-<div class="qr"><img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="二维码"></div>
-<p>扫描上方二维码添加好友领奖</p>
-<p class="tip">请在24小时内添加，逾期作废</p>
-<button class="close" onclick="closeModal()">我知道了</button>
+<div class="qr"><img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="QR"></div>
+<p>&#x626b;&#x63cf;&#x4e0a;&#x65b9;&#x4e8c;&#x7ef4;&#x7801;&#x6dfb;&#x52a0;&#x597d;&#x53cb;&#x9886;&#x5956;</p>
+<p class="tip">&#x8bf7;&#x5728;24&#x5c0f;&#x65f6;&#x5185;&#x6dfb;&#x52a0;&#xff0c;&#x903e;&#x671f;&#x4f5c;&#x5e9f;</p>
+<button class="close" onclick="closeModal()">&#x6211;&#x77e5;&#x9053;&#x4e86;</button>
 </div>
 </div>
 
@@ -52,8 +52,8 @@ var prize = document.getElementById('prize');
 
 if(drawn) {
 btn.disabled = true;
-btn.textContent = '已抽奖';
-result.textContent = '一等奖 - AI工具（价值2690元）';
+btn.innerHTML = '&#x5df2;&#x62bd;&#x5956;';
+result.innerHTML = '&#x4e00;&#x7b49;&#x5956; - AI&#x5de5;&#x5177;&#xff08;&#x4ef7;&#x503c;2690&#x5143;&#xff09;';
 }
 
 function draw() {
@@ -61,14 +61,14 @@ if(drawn) return;
 drawn = true;
 localStorage.setItem('drawn', 'yes');
 btn.disabled = true;
-btn.textContent = '抽奖中...';
-result.textContent = '';
+btn.innerHTML = '&#x62bd;&#x5956;&#x4e2d;...';
+result.innerHTML = '';
 
 setTimeout(function() {
-result.textContent = '一等奖 - AI工具！';
-prize.textContent = '一等奖 - AI工具（价值2690元）';
+result.innerHTML = '&#x4e00;&#x7b49;&#x5956; - AI&#x5de5;&#x5177;&#xff01;';
+prize.innerHTML = '&#x4e00;&#x7b49;&#x5956; - AI&#x5de5;&#x5177;&#xff08;&#x4ef7;&#x503c;2690&#x5143;&#xff09;';
 modal.classList.add('show');
-btn.textContent = '已抽奖';
+btn.innerHTML = '&#x5df2;&#x62bd;&#x5956;';
 }, 2000);
 }
 
