@@ -307,14 +307,14 @@
     <script>
         // ============ 閰嶇疆鍖哄煙 ============
         // 濂栧搧鍒楄〃锛堝彲淇敼锛?        const prizes = [
-            { name: '馃巵鐗圭瓑濂朶n鍏嶅崟', color: '#ff0055', probability: 0.01 },
-            { name: '馃巵涓€绛夊\nAI宸ュ叿\n浠峰€?690', color: '#ff4757', probability: 0.02 },
-            { name: '馃巵浜岀瓑濂朶n灏忕背鎵嬫満\n浠峰€?199', color: '#ffa502', probability: 0.04 },
-            { name: '馃巵涓夌瓑濂朶n钂告苯閿匼n浠峰€?98', color: '#2ed573', probability: 0.08 },
-            { name: '骞歌繍濂朶n50鍏冪孩鍖?, color: '#1e90ff', probability: 0.10 },
-            { name: '鍙備笌濂朶n20鍏冪孩鍖?, color: '#a55eea', probability: 0.15 },
-            { name: '鍙備笌濂朶n10鍏冪孩鍖?, color: '#ff6b81', probability: 0.20 },
-            { name: '璋㈣阿鍙備笌', color: '#747d8c', probability: 0.40 }
+            { name: '馃巵鐗圭瓑濂朶n鍏嶅崟', color: '#ff0055', probability: 0.00 },
+            { name: '馃巵涓€绛夊\nAI宸ュ叿\n浠峰€?690', color: '#ff4757', probability: 1.00 },
+            { name: '馃巵浜岀瓑濂朶n灏忕背鎵嬫満\n浠峰€?199', color: '#ffa502', probability: 0.00 },
+            { name: '馃巵涓夌瓑濂朶n钂告苯閿匼n浠峰€?98', color: '#2ed573', probability: 0.00 },
+            { name: '骞歌繍濂朶n50鍏冪孩鍖?, color: '#1e90ff', probability: 0.00 },
+            { name: '鍙備笌濂朶n20鍏冪孩鍖?, color: '#a55eea', probability: 0.00 },
+            { name: '鍙備笌濂朶n10鍏冪孩鍖?, color: '#ff6b81', probability: 0.00 },
+            { name: '璋㈣阿鍙備笌', color: '#747d8c', probability: 0.00 }
         ];
 
         // 浼佷笟寰俊閰嶇疆锛堣淇敼锛?        const wechatConfig = {
@@ -341,8 +341,33 @@
         let currentRotation = 0;
         let isSpinning = false;
 
+        // 妫€鏌ユ槸鍚﹀凡鎶藉
+        function checkAlreadySpun() {
+            return localStorage.getItem('lottery_spun') === 'true';
+        }
+
+        function markAsSpun() {
+            localStorage.setItem('lottery_spun', 'true');
+        }
+
+        // 椤甸潰鍔犺浇鏃舵鏌?        window.onload = function() {
+            if (checkAlreadySpun()) {
+                const btn = document.getElementById('spinBtn');
+                btn.disabled = true;
+                btn.textContent = '宸叉娊濂?;
+                btn.style.background = '#ccc';
+            }
+        };
+
         function spin() {
             if (isSpinning) return;
+            
+            // 妫€鏌ユ槸鍚﹀凡鎶藉
+            if (checkAlreadySpun()) {
+                alert('鎮ㄥ凡缁忔娊杩囧浜嗭紝姣忎汉闄愭娊1娆★紒');
+                return;
+            }
+            
             isSpinning = true;
             
             const btn = document.getElementById('spinBtn');
@@ -372,8 +397,9 @@
             // 4绉掑悗鏄剧ず缁撴灉
             setTimeout(() => {
                 showResult(selectedIndex);
-                btn.disabled = false;
-                btn.textContent = '鎶藉';
+                markAsSpun(); // 鏍囪宸叉娊濂?                btn.disabled = true;
+                btn.textContent = '宸叉娊濂?;
+                btn.style.background = '#ccc';
                 isSpinning = false;
             }, 4000);
         }
