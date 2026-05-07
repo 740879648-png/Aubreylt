@@ -10,13 +10,13 @@ body{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);min-height:100vh
 .wrap{text-align:center;padding:20px}
 h1{color:#ffd700;margin-bottom:30px;font-size:32px;text-shadow:0 0 20px rgba(255,215,0,0.5)}
 .slot-machine{position:relative;width:340px;height:260px;background:linear-gradient(180deg,#2d2d44,#1a1a2e);border-radius:20px;padding:15px;margin:0 auto;box-shadow:0 15px 50px rgba(0,0,0,0.5),inset 0 2px 0 rgba(255,255,255,0.1);border:4px solid #ffd700}
-.window{width:100%;height:170px;background:#000;border-radius:10px;overflow:hidden;display:flex;justify-content:center;align-items:center;box-shadow:inset 0 0 25px rgba(255,215,0,0.15)}
-.reels{display:flex;gap:8px;justify-content:center}
-.reel{width:90px;height:110px;position:relative;overflow:hidden;background:#111;border-radius:8px;border:2px solid #ffd700}
-.reel-inner{position:absolute;width:100%;transition:top 0.1s ease-out}
-.reel-item{width:100%;height:110px;display:flex;justify-content:center;align-items:center;background:linear-gradient(180deg,#222,#111)}
-.reel-item img{width:80px;height:80px;object-fit:contain}
+.window{width:100%;height:170px;background:#000;border-radius:10px;overflow:hidden;box-shadow:inset 0 0 25px rgba(255,215,0,0.15);position:relative}
 .line{position:absolute;top:50%;left:5%;width:90%;height:3px;background:rgba(255,215,0,0.7);box-shadow:0 0 12px rgba(255,215,0,0.9);z-index:10;transform:translateY(-50%)}
+.reels{display:flex;gap:8px;justify-content:center;padding:25px 0}
+.reel{width:90px;height:120px;position:relative;overflow:hidden;background:#111;border-radius:8px;border:2px solid #ffd700}
+.reel-strip{position:absolute;width:100%;will-change:transform}
+.reel-item{width:100%;height:120px;display:flex;justify-content:center;align-items:center;background:linear-gradient(180deg,#222,#111)}
+.reel-item img{width:80px;height:80px;object-fit:contain}
 .handle{position:absolute;right:-22px;top:50%;width:25px;height:100px;background:linear-gradient(90deg,#c0c0c0,#888);border-radius:0 12px 12px 0;transform:translateY(-50%);cursor:pointer;transition:transform 0.2s;z-index:5}
 .handle::after{content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:16px;height:16px;background:#ffd700;border-radius:50%;box-shadow:0 0 8px rgba(255,215,0,0.5)}
 .handle.pull{transform:translateY(-25%)}
@@ -37,13 +37,11 @@ h1{color:#ffd700;margin-bottom:30px;font-size:32px;text-shadow:0 0 20px rgba(255
 .tip-text{color:#ff4757;font-size:13px;margin-top:10px}
 .close{background:linear-gradient(180deg,#764ba2,#667eea);color:#fff;border:none;padding:12px 40px;border-radius:25px;font-size:16px;cursor:pointer;margin-top:15px;transition:transform 0.2s}
 .close:hover{transform:scale(1.05)}
-.save-btn{display:inline-block;background:#2ed573;color:#fff;border:none;padding:10px 25px;border-radius:20px;font-size:14px;cursor:pointer;margin-top:10px;text-decoration:none}
-.save-btn:hover{transform:scale(1.05)}
 @keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
 @media(max-width:400px){
 .slot-machine{width:300px;height:230px}
-.reel{width:75px;height:95px}
-.reel-item{width:75px;height:95px}
+.reel{width:75px;height:100px}
+.reel-item{width:75px;height:100px}
 .reel-item img{width:65px;height:65px}
 .btn{width:160px;font-size:16px}
 .content{padding:30px 20px}
@@ -57,9 +55,9 @@ h1{color:#ffd700;margin-bottom:30px;font-size:32px;text-shadow:0 0 20px rgba(255
 <div class="window">
 <div class="line"></div>
 <div class="reels">
-<div class="reel" id="reel1"></div>
-<div class="reel" id="reel2"></div>
-<div class="reel" id="reel3"></div>
+<div class="reel" id="reel1"><div class="reel-strip" id="strip1"></div></div>
+<div class="reel" id="reel2"><div class="reel-strip" id="strip2"></div></div>
+<div class="reel" id="reel3"><div class="reel-strip" id="strip3"></div></div>
 </div>
 </div>
 <div class="handle" id="handle" onclick="spin()"></div>
@@ -97,7 +95,7 @@ var prizes = [
 var baseUrl = 'https://740879648-png.github.io/Aubreylt/';
 var drawn = localStorage.getItem('lottery_drawn') === 'yes';
 var spinning = false;
-var rot = 0;
+var prizeCount = prizes.length;
 
 function init() {
 var btn = document.getElementById('btn');
@@ -107,10 +105,11 @@ btn.textContent = '✓ 已抽奖';
 document.querySelector('.tip').textContent = '您已参与过抽奖';
 }
 prizes.forEach(function(p, i) {
-['reel1','reel2','reel3'].forEach(function(id) {
+['strip1','strip2','strip3'].forEach(function(id) {
 var item = document.createElement('div');
 item.className = 'reel-item';
 item.innerHTML = '<img src="' + baseUrl + p.img + '">';
+item.dataset.index = i;
 document.getElementById(id).appendChild(item);
 });
 });
@@ -128,33 +127,32 @@ btn.textContent = '⏳ 抽奖中...';
 handle.classList.add('pull');
 setTimeout(function(){handle.classList.remove('pull')},300);
 
-// find winning index
 var rand = Math.random();
 var cum = 0;
-var idx = prizes.length - 1;
-for (var i = 0; i < prizes.length; i++) {
+var idx = prizeCount - 1;
+for (var i = 0; i < prizeCount; i++) {
 cum += prizes[i].prob;
 if (rand < cum) {idx = i; break;}
 }
 
-var ang = 360 / prizes.length;
-var base = 360 * 8;
-var prizeAng = ang * idx;
-var target = rot + base + (360 - prizeAng - ang / 2);
+var itemHeight = 120;
+var scrollDuration = 3000;
+var reels = ['strip1','strip2','strip3'];
 
-// animate reels
-['reel1','reel2','reel3'].forEach(function(id, k) {
-var inner = document.getElementById(id).querySelector('.reel-inner') || document.getElementById(id);
-inner.style.transition = 'none';
-inner.style.top = '0px';
+reels.forEach(function(stripId, k) {
+var strip = document.getElementById(stripId);
+var totalHeight = prizeCount * itemHeight;
+var extraSpins = 8;
+var targetY = -(idx * itemHeight + extraSpins * totalHeight);
+
+strip.style.transition = 'none';
+strip.style.transform = 'translateY(0)';
+
 setTimeout(function() {
-inner.style.transition = 'top ' + (3.5 + k * 0.3) + 's cubic-bezier(0.1,0.4,0.3,1)';
-inner.style.top = -(110 * idx + 55) + 'px';
+strip.style.transition = 'transform ' + (scrollDuration + k * 500) + 'ms cubic-bezier(0.15, 0.3, 0.2, 1)';
+strip.style.transform = 'translateY(' + targetY + 'px)';
 }, 50);
 });
-
-rot = target;
-document.querySelector('.slot-machine').style.transform = 'rotate(' + target + 'deg)';
 
 setTimeout(function() {
 drawn = true;
@@ -163,7 +161,7 @@ btn.textContent = '✓ 已抽奖';
 document.querySelector('.tip').textContent = '您已参与过抽奖';
 showResult(idx);
 spinning = false;
-}, 5000);
+}, scrollDuration + 1500);
 }
 
 function showResult(idx) {
