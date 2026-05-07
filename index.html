@@ -20,6 +20,7 @@ h1{font-size:28px;color:#333;margin-bottom:10px;background:linear-gradient(135de
 .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,0.5)}
 .btn:disabled{background:#ccc;cursor:not-allowed;transform:none}
 .btn:active:not(:disabled){transform:translateY(0)}
+.btn-secondary{background:linear-gradient(135deg,#11998e,#38ef7d)}
 .status{margin-top:20px;color:#666;font-size:14px}
 .disabled-msg{background:#fee;border:1px solid #f5576c;color:#f5576c;padding:20px;border-radius:12px;margin-bottom:20px}
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:1000}
@@ -32,6 +33,11 @@ h1{font-size:28px;color:#333;margin-bottom:10px;background:linear-gradient(135de
 .modal-qrcode{max-width:200px;border-radius:10px;margin:15px auto;display:block}
 .modal-tip{color:#666;font-size:14px;margin-top:15px}
 .modal-close{background:#667eea;color:#fff;border:none;padding:12px 30px;border-radius:20px;cursor:pointer;margin-top:20px}
+.modal-next{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;border:none;padding:14px 40px;border-radius:25px;font-size:16px;cursor:pointer;margin-top:20px;font-weight:bold}
+.teacher-info{background:linear-gradient(135deg,#f5f7fa,#c3cfe2);border-radius:15px;padding:25px;margin:20px 0}
+.teacher-info h3{color:#333;font-size:18px;margin-bottom:15px}
+.teacher-info p{color:#666;font-size:14px;line-height:1.8}
+.highlight{color:#f5576c;font-weight:bold;font-size:16px}
 .preloader{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;z-index:10;border-radius:12px}
 .spinner{width:30px;height:30px;border:3px solid #f0f0f0;border-top-color:#667eea;border-radius:50%;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -50,18 +56,9 @@ h1{font-size:28px;color:#333;margin-bottom:10px;background:linear-gradient(135de
 <h1 id="pageTitle">幸运大抽奖</h1>
 <p class="subtitle">100%中奖，惊喜等你来拿！</p>
 <div class="slot-machine">
-<div class="slot" id="slot1">
-<div class="preloader"><div class="spinner"></div></div>
-<div class="slot-inner"></div>
-</div>
-<div class="slot" id="slot2">
-<div class="preloader"><div class="spinner"></div></div>
-<div class="slot-inner"></div>
-</div>
-<div class="slot" id="slot3">
-<div class="preloader"><div class="spinner"></div></div>
-<div class="slot-inner"></div>
-</div>
+<div class="slot" id="slot1"><div class="preloader"><div class="spinner"></div></div><div class="slot-inner"></div></div>
+<div class="slot" id="slot2"><div class="preloader"><div class="spinner"></div></div><div class="slot-inner"></div></div>
+<div class="slot" id="slot3"><div class="preloader"><div class="spinner"></div></div><div class="slot-inner"></div></div>
 </div>
 <button class="btn" id="drawBtn" onclick="startDraw()">开始抽奖</button>
 <p class="status" id="status">每人限抽 1 次</p>
@@ -79,9 +76,22 @@ h1{font-size:28px;color:#333;margin-bottom:10px;background:linear-gradient(135de
 <h3 class="modal-title" id="modalTitle">恭喜中奖</h3>
 <p class="modal-prize" id="modalPrize"></p>
 <img class="modal-img" id="modalImg" style="display:none">
-<img class="modal-qrcode" id="modalQrcode">
-<p class="modal-tip">扫码添加实操老师领奖</p>
-<button class="modal-close" onclick="closeModal()">我知道了</button>
+<p class="modal-tip">点击下方按钮联系实操老师领奖</p>
+<button class="modal-next" onclick="showTeacherPage()">下一步 · 添加实操老师</button>
+</div>
+</div>
+
+<div class="modal" id="teacherModal">
+<div class="modal-content">
+<h3 class="modal-title" style="color:#11998e">添加实操老师</h3>
+<div class="teacher-info">
+<h3>扫码添加实操老师</h3>
+<p>请扫描下方二维码添加实操老师</p>
+<p class="highlight">凭中奖截图领取奖品</p>
+</div>
+<img class="modal-qrcode" id="teacherQrcode">
+<p class="modal-tip">长按二维码可保存图片</p>
+<button class="modal-close" onclick="closeAllModal()">我知道了</button>
 </div>
 </div>
 
@@ -90,6 +100,7 @@ let config = null;
 let prizes = [];
 let baseUrl = 'https://740879648-png.github.io/Aubreylt/';
 let hasDrawn = false;
+let currentWinner = null;
 
 async function loadConfig() {
   try {
@@ -101,8 +112,9 @@ async function loadConfig() {
     document.getElementById('pageTitle').textContent = config.pageTitle || '幸运大抽奖';
     document.getElementById('status').textContent = '每人限抽 ' + (config.maxDraws || 1) + ' 次';
     document.getElementById('modalTitle').textContent = config.modalTitle || '恭喜中奖';
+    
     if (config.qrcodeUrl) {
-      document.getElementById('modalQrcode').src = config.qrcodeUrl;
+      document.getElementById('teacherQrcode').src = config.qrcodeUrl;
     }
     
     if (!config.lotteryEnabled) {
@@ -132,7 +144,7 @@ function preloadImages() {
 }
 
 function checkDrawStatus() {
-  const key = 'lottery_v6_' + (config?.maxDraws || 1);
+  const key = 'lottery_v7_' + (config?.maxDraws || 1);
   const record = localStorage.getItem(key);
   if (record) {
     hasDrawn = true;
@@ -156,9 +168,9 @@ function initSlots() {
       displayItems.forEach(item => {
         html += '<div class="slot-item">';
         if (item.img) {
-          html += `<img src="${baseUrl + item.img}" onerror="this.outerHTML='<div class=\\'fallback\\'>'+escapeHtml(item.name)+'</div>'">`;
+          html += '<img src="' + baseUrl + item.img + '" onerror="this.outerHTML=\'<div class=\\'fallback\\'>'+escapeHtml(item.name)+'</div>\'">';
         } else {
-          html += `<div class="fallback">${escapeHtml(item.name)}</div>`;
+          html += '<div class="fallback">' + escapeHtml(item.name) + '</div>';
         }
         html += '</div>';
       });
@@ -190,6 +202,7 @@ function startDraw() {
   }
   
   const winner = weightedRandom(activePrizes);
+  currentWinner = winner;
   
   animateSlots(winner);
 }
@@ -222,24 +235,24 @@ function animateSlots(winner) {
     randomItems.forEach(item => {
       html += '<div class="slot-item">';
       if (item.img) {
-        html += `<img src="${baseUrl + item.img}" onerror="this.outerHTML='<div class=\\'fallback\\'>'+escapeHtml(item.name)+'</div>'">`;
+        html += '<img src="' + baseUrl + item.img + '" onerror="this.outerHTML=\'<div class=\\'fallback\\'>'+escapeHtml(item.name)+'</div>\'">';
       } else {
-        html += `<div class="fallback">${escapeHtml(item.name)}</div>`;
+        html += '<div class="fallback">' + escapeHtml(item.name) + '</div>';
       }
       html += '</div>';
     });
     html += '<div class="slot-item">';
     if (winner.img) {
-      html += `<img src="${baseUrl + winner.img}">`;
+      html += '<img src="' + baseUrl + winner.img + '">';
     } else {
-      html += `<div class="fallback">${escapeHtml(winner.name)}</div>`;
+      html += '<div class="fallback">' + escapeHtml(winner.name) + '</div>';
     }
     html += '</div>';
     inner.innerHTML = html;
     
     const finalOffset = -(randomItems.length * itemHeight);
-    inner.style.transition = `transform ${duration}ms cubic-bezier(0.25, 0.1, 0.25, 1)`;
-    inner.style.transform = `translateY(${finalOffset}px)`;
+    inner.style.transition = 'transform ' + duration + 'ms cubic-bezier(0.25, 0.1, 0.25, 1)';
+    inner.style.transform = 'translateY(' + finalOffset + 'px)';
   }
   
   setTimeout(() => {
@@ -258,7 +271,7 @@ function showResult(winner) {
   }
   document.getElementById('resultModal').classList.add('show');
   
-  const key = 'lottery_v6_' + (config?.maxDraws || 1);
+  const key = 'lottery_v7_' + (config?.maxDraws || 1);
   localStorage.setItem(key, JSON.stringify({
     prize: winner.name,
     time: new Date().toISOString()
@@ -267,8 +280,15 @@ function showResult(winner) {
   document.getElementById('drawBtn').textContent = '已抽过奖';
 }
 
-function closeModal() {
+function showTeacherPage() {
   document.getElementById('resultModal').classList.remove('show');
+  setTimeout(() => {
+    document.getElementById('teacherModal').classList.add('show');
+  }, 300);
+}
+
+function closeAllModal() {
+  document.getElementById('teacherModal').classList.remove('show');
 }
 
 loadConfig();
