@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -105,7 +105,7 @@ var prizes = [
 ];
 
 var baseUrl = 'https://740879648-png.github.io/Aubreylt/';
-var drawn = localStorage.getItem('lottery_v2') === 'yes';
+var drawn = localStorage.getItem('lottery_v3') === 'yes';
 var spinning = false;
 var prizeCount = prizes.length;
 
@@ -169,7 +169,7 @@ strip.style.transform = 'translateY(' + targetY + 'px)';
 
 setTimeout(function() {
 drawn = true;
-localStorage.setItem('lottery_v2', 'yes');
+localStorage.setItem('lottery_v3', 'yes');
 btn.textContent = '\u5DF2\u62BD\u5956';
 document.querySelector('.tip').textContent = '\u60A8\u5DF2\u53C2\u4E0E\u8FC7\u62BD\u5956';
 showResult(idx);
