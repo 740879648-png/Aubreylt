@@ -1,199 +1,481 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>幸运大抽奖</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:'Microsoft YaHei',sans-serif}
-.wrap{text-align:center;padding:20px}
-h1{color:#ffd700;margin-bottom:30px;font-size:32px;text-shadow:0 0 20px rgba(255,215,0,0.5)}
-.slot-machine{position:relative;width:340px;height:260px;background:linear-gradient(180deg,#2d2d44,#1a1a2e);border-radius:20px;padding:15px;margin:0 auto;box-shadow:0 15px 50px rgba(0,0,0,0.5),inset 0 2px 0 rgba(255,255,255,0.1);border:4px solid #ffd700}
-.window{width:100%;height:170px;background:#000;border-radius:10px;overflow:hidden;box-shadow:inset 0 0 25px rgba(255,215,0,0.15);position:relative}
-.line{position:absolute;top:50%;left:5%;width:90%;height:3px;background:rgba(255,215,0,0.7);box-shadow:0 0 12px rgba(255,215,0,0.9);z-index:10;transform:translateY(-50%)}
-.reels{display:flex;gap:8px;justify-content:center;padding:25px 0;position:relative;height:120px}
-.reel{width:90px;height:120px;position:relative;overflow:hidden;background:#111;border-radius:8px;border:2px solid #ffd700}
-.reel-strip{position:absolute;width:100%;top:0;left:0}
-.reel-item{width:100%;height:120px;display:flex;justify-content:center;align-items:center;background:linear-gradient(180deg,#222,#111);flex-shrink:0}
-.reel-item img{width:80px;height:80px;object-fit:contain;display:block}
-.handle{position:absolute;right:-22px;top:50%;width:25px;height:100px;background:linear-gradient(90deg,#c0c0c0,#888);border-radius:0 12px 12px 0;transform:translateY(-50%);cursor:pointer;transition:transform 0.2s;z-index:5}
-.handle::after{content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:16px;height:16px;background:#ffd700;border-radius:50%;box-shadow:0 0 8px rgba(255,215,0,0.5)}
+body{
+  background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:'Microsoft YaHei',sans-serif;
+}
+.wrap{text-align:center;padding:20px;width:100%;max-width:400px}
+h1{
+  color:#ffd700;
+  margin-bottom:30px;
+  font-size:32px;
+  text-shadow:0 0 20px rgba(255,215,0,0.5);
+  letter-spacing:4px;
+}
+
+/* === 老虎机主体 === */
+.slot-machine{
+  position:relative;
+  width:340px;
+  height:260px;
+  background:linear-gradient(180deg,#2d2d44,#1a1a2e);
+  border-radius:20px;
+  padding:15px;
+  margin:0 auto;
+  box-shadow:0 15px 50px rgba(0,0,0,0.5),inset 0 2px 0 rgba(255,255,255,0.1);
+  border:4px solid #ffd700;
+}
+.window{
+  width:100%;
+  height:170px;
+  background:#000;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:inset 0 0 25px rgba(255,215,0,0.15);
+  position:relative;
+}
+/* 遮罩：上下渐隐效果 */
+.window::before,.window::after{
+  content:'';
+  position:absolute;
+  left:0;right:0;
+  height:35px;
+  z-index:5;
+  pointer-events:none;
+}
+.window::before{
+  top:0;
+  background:linear-gradient(to bottom,rgba(26,26,46,0.9),transparent);
+}
+.window::after{
+  bottom:0;
+  background:linear-gradient(to top,rgba(26,26,46,0.9),transparent);
+}
+.line{
+  position:absolute;
+  top:50%;
+  left:5%;
+  width:90%;
+  height:3px;
+  background:rgba(255,215,0,0.8);
+  box-shadow:0 0 12px rgba(255,215,0,0.9);
+  z-index:10;
+  transform:translateY(-50%);
+}
+.reels{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  padding:25px 0;
+  position:relative;
+  height:120px;
+}
+.reel{
+  width:90px;
+  height:120px;
+  position:relative;
+  overflow:hidden;
+  background:#111;
+  border-radius:8px;
+  border:2px solid #ffd700;
+  flex-shrink:0;
+}
+.reel-strip{
+  position:absolute;
+  width:100%;
+  top:0;
+  left:0;
+}
+.reel-item{
+  width:100%;
+  height:120px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(180deg,#222,#111);
+  flex-shrink:0;
+}
+.reel-item img{
+  width:80px;
+  height:80px;
+  object-fit:contain;
+  display:block;
+}
+/* 占位：图片加载失败时显示文字 */
+.reel-item .fallback{
+  font-size:12px;
+  color:#ffd700;
+  text-align:center;
+  padding:5px;
+  line-height:1.3;
+}
+.handle{
+  position:absolute;
+  right:-22px;
+  top:50%;
+  width:25px;
+  height:100px;
+  background:linear-gradient(90deg,#c0c0c0,#888);
+  border-radius:0 12px 12px 0;
+  transform:translateY(-50%);
+  cursor:pointer;
+  transition:transform 0.2s;
+  z-index:5;
+}
+.handle::after{
+  content:'';
+  position:absolute;
+  top:-8px;left:50%;
+  transform:translateX(-50%);
+  width:16px;height:16px;
+  background:#ffd700;
+  border-radius:50%;
+  box-shadow:0 0 8px rgba(255,215,0,0.5);
+}
 .handle.pull{transform:translateY(-25%)}
-.btn{width:200px;padding:15px;margin:25px auto 0;background:linear-gradient(180deg,#ffd700,#ff8c00);border:none;border-radius:50px;font-size:20px;font-weight:bold;color:#1a1a2e;cursor:pointer;box-shadow:0 6px 20px rgba(255,140,0,0.4);transition:all 0.2s}
+
+/* === 按钮 === */
+.btn{
+  width:200px;
+  padding:15px;
+  margin:25px auto 0;
+  background:linear-gradient(180deg,#ffd700,#ff8c00);
+  border:none;
+  border-radius:50px;
+  font-size:20px;
+  font-weight:bold;
+  color:#1a1a2e;
+  cursor:pointer;
+  box-shadow:0 6px 20px rgba(255,140,0,0.4);
+  transition:all 0.2s;
+  display:block;
+}
 .btn:hover{transform:scale(1.05);box-shadow:0 8px 25px rgba(255,140,0,0.5)}
-.btn:disabled{background:#555;color:#999;cursor:not-allowed;transform:none}
+.btn:disabled{background:#555;color:#999;cursor:not-allowed;transform:none;box-shadow:none}
 .tip{color:#ffd700;margin-top:15px;font-size:14px;opacity:0.8}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:100}
+
+/* === 弹窗 === */
+.modal{
+  display:none;
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.85);
+  justify-content:center;
+  align-items:center;
+  z-index:100;
+}
 .modal.show{display:flex}
-.content{background:#fff;padding:40px 30px;border-radius:25px;text-align:center;max-width:90%;width:420px;animation:slideUp 0.5s cubic-bezier(0.17,0.67,0.12,0.99)}
+.content{
+  background:#fff;
+  padding:40px 30px;
+  border-radius:25px;
+  text-align:center;
+  max-width:90%;width:420px;
+  animation:slideUp 0.5s cubic-bezier(0.17,0.67,0.12,0.99);
+}
 .content h2{color:#764ba2;margin-bottom:20px;font-size:26px}
-.prize-img{width:180px;height:180px;margin:15px auto;border-radius:15px;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,0.15)}
+.prize-img{
+  width:180px;height:180px;
+  margin:15px auto;
+  border-radius:15px;
+  overflow:hidden;
+  box-shadow:0 5px 20px rgba(0,0,0,0.15);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#f8f8f8;
+}
 .prize-img img{width:100%;height:100%;object-fit:contain}
+.prize-img .fallback{font-size:14px;color:#764ba2;font-weight:bold}
 .prize-name{font-size:18px;font-weight:bold;color:#333;margin:15px 0}
-.qr-box{width:200px;height:200px;margin:20px auto;background:#f5f5f5;border-radius:15px;padding:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+.qr-box{
+  width:200px;height:200px;
+  margin:20px auto;
+  background:#f5f5f5;
+  border-radius:15px;
+  padding:12px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
 .qr-box img{width:100%;height:100%;object-fit:contain;border-radius:8px}
 .content p{color:#666;font-size:15px;margin:12px 0;line-height:1.6}
 .tip-text{color:#ff4757;font-size:13px;margin-top:10px}
-.next-btn{background:linear-gradient(180deg,#ffd700,#ff8c00);color:#1a1a2e;border:none;padding:15px 50px;border-radius:25px;font-size:18px;font-weight:bold;cursor:pointer;margin-top:20px;transition:transform 0.2s}
+.next-btn{
+  background:linear-gradient(180deg,#ffd700,#ff8c00);
+  color:#1a1a2e;border:none;
+  padding:15px 50px;border-radius:25px;
+  font-size:18px;font-weight:bold;
+  cursor:pointer;margin-top:20px;
+  transition:transform 0.2s;
+}
 .next-btn:hover{transform:scale(1.05)}
-.close{background:linear-gradient(180deg,#764ba2,#667eea);color:#fff;border:none;padding:12px 40px;border-radius:25px;font-size:16px;cursor:pointer;margin-top:15px;transition:transform 0.2s}
+.close{
+  background:linear-gradient(180deg,#764ba2,#667eea);
+  color:#fff;border:none;
+  padding:12px 40px;border-radius:25px;
+  font-size:16px;cursor:pointer;margin-top:15px;
+  transition:transform 0.2s;
+}
 .close:hover{transform:scale(1.05)}
+
 @keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(255,215,0,0.3)}50%{box-shadow:0 0 30px rgba(255,215,0,0.8)}}
+@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(255,215,0,0.3),0 15px 50px rgba(0,0,0,0.5)}50%{box-shadow:0 0 30px rgba(255,215,0,0.8),0 15px 50px rgba(0,0,0,0.5)}}
 .slot-machine{animation:glow 2s infinite}
+
 @media(max-width:400px){
-.slot-machine{width:300px;height:230px}
-.reel{width:75px;height:100px}
-.reel-item{width:75px;height:100px}
-.reel-item img{width:65px;height:65px}
-.btn{width:160px;font-size:16px}
-.content{padding:30px 20px}
+  .slot-machine{width:300px;height:230px}
+  .reel{width:75px;height:100px}
+  .reel-item{width:75px;height:100px}
+  .reel-item img{width:65px;height:65px}
+  .btn{width:160px;font-size:16px}
+  .content{padding:30px 20px}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>幸运大抽奖</h1>
-<div class="slot-machine">
-<div class="window">
-<div class="line"></div>
-<div class="reels">
-<div class="reel" id="reel1"><div class="reel-strip" id="strip1"></div></div>
-<div class="reel" id="reel2"><div class="reel-strip" id="strip2"></div></div>
-<div class="reel" id="reel3"><div class="reel-strip" id="strip3"></div></div>
-</div>
-</div>
-<div class="handle" id="handle" onclick="spin()"></div>
-</div>
-<button class="btn" id="btn" onclick="spin()">抽奖</button>
-<div class="tip">每人限抽1次 - 100%中奖</div>
+  <h1>幸运大抽奖</h1>
+
+  <div class="slot-machine">
+    <div class="window">
+      <div class="line"></div>
+      <div class="reels">
+        <div class="reel" id="reel1"><div class="reel-strip" id="strip1"></div></div>
+        <div class="reel" id="reel2"><div class="reel-strip" id="strip2"></div></div>
+        <div class="reel" id="reel3"><div class="reel-strip" id="strip3"></div></div>
+      </div>
+    </div>
+    <div class="handle" id="handle" onclick="spin()"></div>
+  </div>
+
+  <button class="btn" id="btn" onclick="spin()">开始抽奖</button>
+  <div class="tip">每人限抽1次 · 100%中奖</div>
 </div>
 
+<!-- 中奖弹窗 -->
 <div class="modal" id="modal1">
-<div class="content">
-<h2>恭喜中奖</h2>
-<div class="prize-img" id="prizeImg"></div>
-<div class="prize-name" id="prizeName"></div>
-<p>请添加实操老师领取奖品</p>
-<button class="next-btn" onclick="showQRCode()">添加实操老师</button>
-</div>
+  <div class="content">
+    <h2>恭喜中奖</h2>
+    <div class="prize-img" id="prizeImg"><span class="fallback">加载中...</span></div>
+    <div class="prize-name" id="prizeName"></div>
+    <p>请添加实操老师领取奖品</p>
+    <button class="next-btn" onclick="showQRCode()">添加实操老师</button>
+  </div>
 </div>
 
+<!-- 二维码弹窗 -->
 <div class="modal" id="modal2">
-<div class="content">
-<h2>扫码添加实操老师</h2>
-<div class="qr-box">
-<img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="QR">
-</div>
-<p>长按保存二维码，扫码添加实操老师</p>
-<p class="tip-text">请在24小时内添加，过期作废</p>
-<button class="close" onclick="closeAll()">我知道了</button>
-</div>
+  <div class="content">
+    <h2>扫码添加实操老师</h2>
+    <div class="qr-box">
+      <img src="qrcode.jpg" alt="企业微信" onerror="this.parentElement.style.background='#eee';this.parentElement.innerHTML='<div style=font-size:12px;color:#999;padding:20px>二维码加载失败<br>请截图本页联系客服</div>'">
+    </div>
+    <p>长按保存二维码，扫码添加实操老师</p>
+    <p class="tip-text">请在24小时内添加，过期作废</p>
+    <button class="close" onclick="closeAll()">我知道了</button>
+  </div>
 </div>
 
 <script>
-var prizes = [
-{img:'prizes/ai-tool.jpg',name:'一等奖 - AI工具包（价值2690元）',prob:1}
-];
+(function(){
+  // ========== 配置 ==========
+  var prizes = [
+    {
+      img: 'prizes/ai-tool.jpg',
+      name: '一等奖 - AI\u5de5\u5177\u5305\uff08\u4ef7\u503c2690\u5143\uff09',
+      prob: 1,
+      level: 1
+    },
+    {
+      img: 'prizes/free-order.jpg',
+      name: '\u7279\u7b49\u5956 - \u514d\u5355',
+      prob: 0,
+      level: 0
+    },
+    {
+      img: 'prizes/xiaomi-phone.jpg',
+      name: '\u4e8c\u7b49\u5956 - \u5c0f\u7c73\u624b\u673a',
+      prob: 0,
+      level: 2
+    },
+    {
+      img: 'prizes/steam-pot.jpg',
+      name: '\u4e09\u7b49\u5956 - \u84b8\u6c14\u9525',
+      prob: 0,
+      level: 3
+    }
+  ];
 
-var baseUrl = 'https://740879648-png.github.io/Aubreylt/';
-var drawn = localStorage.getItem('lottery_v4') === 'yes';
-var spinning = false;
-var prizeCount = prizes.length;
+  var baseUrl = 'https://740879648-png.github.io/Aubreylt/';
+  var drawn = localStorage.getItem('lottery_v5') === 'yes';
+  var spinning = false;
+  var itemHeight = 120;
+  var prizeCount = prizes.length;
+  var totalHeight = prizeCount * itemHeight; // 480
 
-function preload() {
-prizes.forEach(function(p) {
-var img = new Image();
-img.src = baseUrl + p.img;
-});
-}
+  // ========== 预加载图片 ==========
+  function preload(cb) {
+    var loaded = 0;
+    var total = prizes.length;
+    prizes.forEach(function(p, i) {
+      var img = new Image();
+      img.onload = img.onerror = function() {
+        loaded++;
+        if (loaded >= total && cb) cb();
+      };
+      img.src = baseUrl + p.img;
+    });
+    // 防超时
+    setTimeout(function() { if (cb) cb(); }, 3000);
+  }
 
-function init() {
-var btn = document.getElementById('btn');
-if (drawn) {
-btn.disabled = true;
-btn.textContent = '已抽奖';
-document.querySelector('.tip').textContent = '您已参与过抽奖';
-}
-prizes.forEach(function(p, i) {
-['strip1','strip2','strip3'].forEach(function(id) {
-var item = document.createElement('div');
-item.className = 'reel-item';
-item.innerHTML = '<img src="' + baseUrl + p.img + '" onerror="this.style.display=\'none\'">';
-item.dataset.index = i;
-document.getElementById(id).appendChild(item);
-});
-});
-if (drawn) showResult(0);
-}
+  // ========== 初始化老虎机 ==========
+  function init() {
+    var btn = document.getElementById('btn');
+    if (drawn) {
+      btn.disabled = true;
+      btn.textContent = '\u5df2\u62bd\u5956';
+      document.querySelector('.tip').textContent = '\u60a8\u5df2\u53c2\u4e0e\u8fc7\u62bd\u5956';
+    }
 
-function spin() {
-if (spinning) return;
-if (drawn) {alert('您已参与过抽奖！');return;}
-spinning = true;
-var btn = document.getElementById('btn');
-var handle = document.getElementById('handle');
-btn.disabled = true;
-btn.textContent = '抽奖中...';
-handle.classList.add('pull');
-setTimeout(function(){handle.classList.remove('pull')},300);
+    // 构建每条滚轮：每个奖品重复若干次，确保有足够内容滚动
+    // 滚轮内容 = 实际奖品 × N圈 + 再次放一遍防止越界
+    var stripData = [];
+    // 先放一圈（用于动画中间显示）
+    for (var round = 0; round < 8; round++) {
+      for (var i = 0; i < prizeCount; i++) {
+        stripData.push(i);
+      }
+    }
 
-var idx = 0;
-var itemHeight = 120;
-var scrollDuration = 3500;
-var reels = ['strip1','strip2','strip3'];
+    ['strip1','strip2','strip3'].forEach(function(stripId) {
+      var strip = document.getElementById(stripId);
+      strip.innerHTML = ''; // 清空
+      stripData.forEach(function(prizeIdx) {
+        var p = prizes[prizeIdx];
+        var item = document.createElement('div');
+        item.className = 'reel-item';
+        // 图片
+        var img = document.createElement('img');
+        img.src = baseUrl + p.img;
+        img.alt = p.name;
+        // 图片加载失败时的兜底
+        img.onerror = function() {
+          var fb = document.createElement('div');
+          fb.className = 'fallback';
+          fb.textContent = p.name;
+          item.innerHTML = '';
+          item.appendChild(fb);
+        };
+        item.appendChild(img);
+        strip.appendChild(item);
+      });
+    });
+  }
 
-reels.forEach(function(stripId, k) {
-var strip = document.getElementById(stripId);
-var totalHeight = prizeCount * itemHeight;
-var extraSpins = 5 + k * 2;
-var targetY = -(idx * itemHeight + extraSpins * totalHeight);
-strip.style.transition = 'none';
-strip.style.transform = 'translateY(0)';
-setTimeout(function() {
-var duration = scrollDuration + k * 500;
-strip.style.transition = 'transform ' + duration + 'ms cubic-bezier(0.15, 0.85, 0.35, 1)';
-strip.style.transform = 'translateY(' + targetY + 'px)';
-}, 50);
-});
+  // ========== 抽奖动画 ==========
+  function spin() {
+    if (spinning) return;
+    if (drawn) {
+      alert('\u60a8\u5df2\u53c2\u4e0e\u8fc7\u62bd\u5956\uff01');
+      return;
+    }
+    spinning = true;
 
-setTimeout(function() {
-drawn = true;
-localStorage.setItem('lottery_v4', 'yes');
-btn.textContent = '已抽奖';
-document.querySelector('.tip').textContent = '您已参与过抽奖';
-showResult(idx);
-spinning = false;
-}, scrollDuration + 1500);
-}
+    var btn = document.getElementById('btn');
+    var handle = document.getElementById('handle');
+    btn.disabled = true;
+    btn.textContent = '\u62bd\u5956\u4e2d...';
+    handle.classList.add('pull');
+    setTimeout(function() { handle.classList.remove('pull'); }, 300);
 
-function showResult(idx) {
-var p = prizes[idx];
-document.getElementById('prizeImg').innerHTML = '<img src="' + baseUrl + p.img + '">';
-document.getElementById('prizeName').textContent = p.name;
-document.getElementById('modal1').classList.add('show');
-}
+    // 本次必定中一等奖（索引0）
+    var idx = 0;
+    var duration = 3500;
+    var reels = ['strip1','strip2','strip3'];
 
-function showQRCode() {
-document.getElementById('modal1').classList.remove('show');
-setTimeout(function() {
-document.getElementById('modal2').classList.add('show');
-}, 300);
-}
+    reels.forEach(function(stripId, k) {
+      var strip = document.getElementById(stripId);
+      // 每条滚轮额外的圈数（错开停止时间）
+      var extraSpins = 8 + k * 3;
+      // 目标位置：动画滚完extraSpins圈后，停在idx=0（第一个奖品）位置
+      // stripData = [0,1,2,3, 0,1,2,3, ...] (8组)
+      // 滚到 extraSpins*4 + 0 = 最后停在第一个奖品位置
+      var targetY = -(extraSpins * prizeCount * itemHeight);
 
-function closeAll() {
-document.getElementById('modal2').classList.remove('show');
-}
+      // 立即归零再开始动画
+      strip.style.transition = 'none';
+      strip.style.transform = 'translateY(0)';
 
-document.getElementById('modal1').addEventListener('click', function(e) {
-if (e.target === this) closeAll();
-});
-document.getElementById('modal2').addEventListener('click', function(e) {
-if (e.target === this) closeAll();
-});
+      setTimeout(function() {
+        strip.style.transition = 'transform ' + (duration + k * 500) + 'ms cubic-bezier(0.15, 0.85, 0.35, 1)';
+        strip.style.transform = 'translateY(' + targetY + 'px)';
+      }, 50);
+    });
 
-window.onload = function(){preload();init();};
+    // 动画结束后显示结果
+    var endTime = duration + 2 * 500 + 100;
+    setTimeout(function() {
+      drawn = true;
+      localStorage.setItem('lottery_v5', 'yes');
+      btn.textContent = '\u5df2\u62bd\u5956';
+      document.querySelector('.tip').textContent = '\u60a8\u5df2\u53c2\u4e0e\u8fc7\u62bd\u5956';
+      showResult(idx);
+      spinning = false;
+    }, endTime);
+  }
+
+  // ========== 显示中奖结果 ==========
+  function showResult(idx) {
+    var p = prizes[idx];
+    var imgEl = document.getElementById('prizeImg');
+    imgEl.innerHTML = '';
+    var img = document.createElement('img');
+    img.src = baseUrl + p.img;
+    img.alt = p.name;
+    img.onerror = function() {
+      imgEl.innerHTML = '<span class="fallback">' + p.name + '</span>';
+    };
+    imgEl.appendChild(img);
+    document.getElementById('prizeName').textContent = p.name;
+    document.getElementById('modal1').classList.add('show');
+  }
+
+  function showQRCode() {
+    document.getElementById('modal1').classList.remove('show');
+    setTimeout(function() {
+      document.getElementById('modal2').classList.add('show');
+    }, 300);
+  }
+
+  function closeAll() {
+    document.getElementById('modal2').classList.remove('show');
+    document.getElementById('modal1').classList.remove('show');
+  }
+
+  // 弹窗点击空白关闭
+  ['modal1','modal2'].forEach(function(id) {
+    document.getElementById(id).addEventListener('click', function(e) {
+      if (e.target === this) closeAll();
+    });
+  });
+
+  // ========== 启动 ==========
+  preload(function() {
+    init();
+  });
+
+})();
 </script>
 </body>
 </html>
