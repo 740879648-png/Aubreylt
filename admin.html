@@ -41,6 +41,7 @@ body{font-family:'Microsoft YaHei',sans-serif;background:#f0f2f5;min-height:100v
 .btn-danger{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff}
 .btn-secondary{background:#f0f0f0;color:#666}
 .btn-secondary:hover{background:#e0e0e0}
+.btn-warning{background:linear-gradient(135deg,#fa709a,#fee140);color:#fff}
 .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important}
 .toggle-wrap{display:flex;align-items:center;gap:12px}
 .toggle{position:relative;width:52px;height:28px}
@@ -64,6 +65,7 @@ body{font-family:'Microsoft YaHei',sans-serif;background:#f0f2f5;min-height:100v
 .prize-item .actions button{padding:5px 12px;font-size:12px;border-radius:6px;border:none;cursor:pointer;transition:all 0.2s}
 .prize-item .actions .edit{background:#e8f0fe;color:#667eea}
 .prize-item .actions .del{background:#fee;color:#f5576c}
+.prize-item .actions .upload{background:#e6f7ef;color:#11998e}
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th{background:#f8f9fa;color:#666;text-align:left;padding:12px 15px;font-weight:500;border-bottom:2px solid #eee}
@@ -90,7 +92,18 @@ tr:hover td{background:#fafafa}
 .sync-status .dot.green{background:#11998e}
 .sync-status .dot.red{background:#f5576c}
 .sync-status .dot.yellow{background:#faad14}
-@media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:15px}.form-row{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr 1fr}}
+
+/* 编辑奖品弹窗 */
+.edit-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:1000}
+.edit-modal.show{display:flex}
+.edit-modal-content{background:#fff;border-radius:16px;padding:30px;width:450px;max-width:90%}
+.edit-modal-content h3{font-size:18px;color:#333;margin-bottom:20px}
+.edit-modal-content .form-group{margin-bottom:15px}
+.edit-modal-content .btn-row{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+
+/* 图片预览 */
+.img-preview{max-width:150px;max-height:100px;border-radius:8px;margin-top:10px;display:none}
+.img-preview.show{display:block}
 </style>
 </head>
 <body>
@@ -151,15 +164,23 @@ tr:hover td{background:#fafafa}
 <strong>&#9888; 注意：</strong>修改奖品后需点击「同步到线上」才会生效。当前配置通过 GitHub 同步。
 </div>
 <div id="prizeList"></div>
+
 <h3 style="font-size:15px;color:#555;margin:20px 0 10px">&#10010; 添加新奖品</h3>
 <div style="background:#f9f9f9;border:1px solid #eee;border-radius:10px;padding:20px">
 <div class="form-row">
 <div class="form-group"><label>奖品名称</label><input type="text" id="newName" placeholder="如：一等奖 - AI工具包"></div>
-<div class="form-group"><label>图片路径</label><input type="text" id="newImg" placeholder="如：prizes/ai-tool.jpg"></div>
+<div class="form-group"><label>奖品等级</label><select id="newLevel"><option value="gold">一等奖</option><option value="silver">二等奖</option><option value="bronze">三等奖</option><option value="normal" selected>普通奖</option></select></div>
 </div>
 <div class="form-row">
+<div class="form-group">
+<label>奖品图片</label>
+<input type="text" id="newImg" placeholder="如：prizes/ai-tool.jpg">
+<input type="file" id="newImgFile" accept="image/*" style="display:none" onchange="handleNewImgSelect(this)">
+<button class="btn btn-secondary" style="margin-top:5px;padding:8px 16px;font-size:12px" onclick="document.getElementById('newImgFile').click()">&#128247; 上传新图片</button>
+<img id="newImgPreview" class="img-preview">
+<div id="newImgUploadStatus" style="font-size:12px;color:#666;margin-top:5px"></div>
+</div>
 <div class="form-group"><label>概率权重</label><input type="number" id="newProb" value="0" min="0"></div>
-<div class="form-group"><label>奖品等级</label><select id="newLevel"><option value="gold">一等奖</option><option value="silver">二等奖</option><option value="bronze">三等奖</option><option value="normal" selected>普通奖</option></select></div>
 </div>
 <button class="btn btn-primary" onclick="addPrize()">&#10010; 添加奖品</button>
 </div>
@@ -173,7 +194,6 @@ tr:hover td{background:#fafafa}
 <h2>&#9881; 抽奖设置</h2>
 <div class="form-group"><label>&#9889; 抽奖总开关</label><div class="toggle-wrap" style="margin-top:8px"><label class="toggle"><input type="checkbox" id="lotteryEnabled" onchange="saveSettings()"><span class="toggle-slider"></span></label><span id="lotteryStatusText" class="status-badge status-on">已启用</span></div></div>
 <div class="form-group"><label>&#9201; 每人可抽次数</label><input type="number" id="maxDraws" value="1" min="1"></div>
-<div class="form-group"><label>&#9203; 抽奖冷却时间（分钟）</label><input type="number" id="cooldown" value="0" min="0"></div>
 <div class="form-group"><label>&#128227; 弹窗提示语</label><input type="text" id="modalTitle" value="恭喜中奖"></div>
 <div class="form-group"><label>&#128222; 企业微信二维码URL</label><input type="text" id="qrcodeUrl" placeholder="https://..."></div>
 <div class="form-group"><label>&#128206; 页面标题</label><input type="text" id="pageTitle" value="幸运大抽奖"></div>
@@ -214,10 +234,34 @@ tr:hover td{background:#fafafa}
 </div>
 </div>
 
+<!-- 编辑奖品弹窗 -->
+<div class="edit-modal" id="editModal">
+<div class="edit-modal-content">
+<h3>编辑奖品</h3>
+<input type="hidden" id="editIndex">
+<div class="form-group"><label>奖品名称</label><input type="text" id="editName"></div>
+<div class="form-group"><label>奖品等级</label><select id="editLevel"><option value="gold">一等奖</option><option value="silver">二等奖</option><option value="bronze">三等奖</option><option value="normal">普通奖</option></select></div>
+<div class="form-group"><label>概率权重</label><input type="number" id="editProb" min="0"></div>
+<div class="form-group">
+<label>图片路径</label>
+<input type="text" id="editImg" placeholder="如：prizes/ai-tool.jpg">
+<input type="file" id="editImgFile" accept="image/*" style="display:none" onchange="handleEditImgSelect(this)">
+<button class="btn btn-secondary" style="margin-top:5px;padding:8px 16px;font-size:12px" onclick="document.getElementById('editImgFile').click()">&#128247; 上传新图片</button>
+<img id="editImgPreview" class="img-preview">
+<div id="editImgUploadStatus" style="font-size:12px;color:#666;margin-top:5px"></div>
+</div>
+<div class="btn-row">
+<button class="btn btn-secondary" onclick="closeEditModal()">取消</button>
+<button class="btn btn-primary" onclick="saveEditPrize()">保存修改</button>
+</div>
+</div>
+</div>
+
 <div class="msg" id="toast"></div>
 
 <script>
 const BASE_URL = 'https://740879648-png.github.io/Aubreylt/';
+const GH_API = 'https://api.github.com';
 
 let config = {
   lotteryEnabled: true,
@@ -236,6 +280,7 @@ let config = {
 let account = { password: 'admin123', token: '', repo: '740879648-png/Aubreylt' };
 let records = [];
 let configSha = '';
+let editPendingImg = null; // 存储待上传的新图片信息
 
 function $(id){return document.getElementById(id)}
 function showMsg(text,type='ok'){var t=$('toast');t.textContent=text;t.className='msg '+type;t.style.display='block';setTimeout(()=>t.style.display='none',3000)}
@@ -338,11 +383,13 @@ function renderPrizes(){
   var html='';
   config.prizes.forEach(function(p,i){
     html+='<div class="prize-item">'+
-    '<h3><span class="badge '+p.level+'">'+levelMap[p.level]+'</span> '+p.name+'</h3>'+
+    '<h3><span class="badge '+p.level+'">'+levelMap[p.level]+'</span> '+escapeHtml(p.name)+'</h3>'+
     '<div style="font-size:13px;color:#666;margin-top:5px">'+
     '图片：'+p.img+' | 权重：'+p.prob+(p.enabled?' | <span style="color:#11998e">已启用</span>':' | <span style="color:#f5576c">已禁用</span>')+
     '</div>'+
     '<div class="actions">'+
+    '<button class="edit" onclick="editPrize('+i+')">编辑</button>'+
+    '<button class="upload" onclick="uploadPrizeImg('+i+')">上传图片</button>'+
     '<button class="edit" onclick="togglePrize('+i+')">'+(p.enabled?'禁用':'启用')+'</button>'+
     '<button class="del" onclick="delPrize('+i+')">删除</button>'+
     '</div></div>';
@@ -350,12 +397,19 @@ function renderPrizes(){
   list.innerHTML=html||'<p style="color:#999;text-align:center;padding:30px">暂无奖品</p>';
 }
 
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 function renderRecords(){
   var tbody=$('recordsBody');
   if(records.length===0){tbody.innerHTML='<tr><td colspan="3" style="text-align:center;color:#999;padding:30px">暂无记录</td></tr>';return}
   var html='';
   records.slice().reverse().forEach(function(r,i){
-    html+='<tr><td>'+(records.length-i)+'</td><td>'+r.date+' '+r.time+'</td><td>'+r.prize+'</td></tr>';
+    html+='<tr><td>'+(records.length-i)+'</td><td>'+r.date+' '+r.time+'</td><td>'+escapeHtml(r.prize)+'</td></tr>';
   });
   tbody.innerHTML=html;
 }
@@ -414,15 +468,11 @@ async function syncToGitHub(){
     var content=btoa(unescape(encodeURIComponent(JSON.stringify(config,null,2))));
     
     var body={message:'Update config.json from admin panel',content:content};
-    
     if(configSha){body.sha=configSha}
     
-    var resp=await fetch('https://api.github.com/repos/'+repo+'/contents/config.json',{
+    var resp=await fetch(GH_API+'/repos/'+repo+'/contents/config.json',{
       method:'PUT',
-      headers:{
-        'Authorization':'token '+account.token,
-        'Content-Type':'application/json'
-      },
+      headers:{'Authorization':'token '+account.token,'Content-Type':'application/json'},
       body:JSON.stringify(body)
     });
     
@@ -442,21 +492,219 @@ async function syncToGitHub(){
     showMsg('同步失败: '+e.message,'err');
   } finally {
     btn.disabled=false;
-    btn.textContent='🚀 同步到线上';
+    btn.textContent='&#128640; 同步到线上';
   }
 }
 
+// ====== 图片上传 ======
+async function uploadImageToGitHub(file, targetPath) {
+  return new Promise((resolve, reject) => {
+    if (!account.token) {
+      reject(new Error('请先在账户设置中填写 GitHub Token'));
+      return;
+    }
+    
+    var reader = new FileReader();
+    reader.onload = async function(e) {
+      try {
+        var base64 = e.target.result.split(',')[1];
+        var repo = account.repo || '740879648-png/Aubreylt';
+        
+        // 检查文件是否已存在
+        var checkResp = await fetch(GH_API + '/repos/' + repo + '/contents/' + targetPath, {
+          headers: { 'Authorization': 'token ' + account.token }
+        });
+        
+        var sha = '';
+        if (checkResp.ok) {
+          var existing = await checkResp.json();
+          sha = existing.sha;
+        }
+        
+        var body = {
+          message: 'Upload image: ' + targetPath,
+          content: base64
+        };
+        if (sha) body.sha = sha;
+        
+        var resp = await fetch(GH_API + '/repos/' + repo + '/contents/' + targetPath, {
+          method: 'PUT',
+          headers: { 'Authorization': 'token ' + account.token, 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        
+        if (resp.ok) {
+          var json = await resp.json();
+          resolve(json.content.download_url);
+        } else {
+          var err = await resp.json();
+          reject(new Error(err.message || '上传失败'));
+        }
+      } catch (e) {
+        reject(e);
+      }
+    };
+    reader.onerror = function() { reject(new Error('文件读取失败')); };
+    reader.readAsDataURL(file);
+  });
+}
+
+// 处理新奖品图片选择
+async function handleNewImgSelect(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  
+  // 验证文件大小 (最大 2MB)
+  if (file.size > 2 * 1024 * 1024) {
+    showMsg('图片大小不能超过 2MB', 'err');
+    return;
+  }
+  
+  // 生成文件名
+  var ext = file.name.split('.').pop();
+  var timestamp = Date.now();
+  var fileName = 'prizes/img_' + timestamp + '.' + ext;
+  
+  $('newImgUploadStatus').textContent = '正在上传...';
+  $('newImgPreview').src = URL.createObjectURL(file);
+  $('newImgPreview').classList.add('show');
+  
+  try {
+    var url = await uploadImageToGitHub(file, fileName);
+    $('newImg').value = fileName;
+    $('newImgUploadStatus').textContent = '上传成功！路径: ' + fileName;
+    showMsg('图片上传成功！');
+  } catch (e) {
+    $('newImgUploadStatus').textContent = '上传失败: ' + e.message;
+    showMsg('图片上传失败: ' + e.message, 'err');
+  }
+}
+
+// 处理编辑奖品图片选择
+async function handleEditImgSelect(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  
+  if (file.size > 2 * 1024 * 1024) {
+    showMsg('图片大小不能超过 2MB', 'err');
+    return;
+  }
+  
+  var ext = file.name.split('.').pop();
+  var timestamp = Date.now();
+  var fileName = 'prizes/img_' + timestamp + '.' + ext;
+  
+  $('editImgUploadStatus').textContent = '正在上传...';
+  $('editImgPreview').src = URL.createObjectURL(file);
+  $('editImgPreview').classList.add('show');
+  
+  try {
+    var url = await uploadImageToGitHub(file, fileName);
+    $('editImg').value = fileName;
+    $('editImgUploadStatus').textContent = '上传成功！路径: ' + fileName;
+    showMsg('图片上传成功！');
+  } catch (e) {
+    $('editImgUploadStatus').textContent = '上传失败: ' + e.message;
+    showMsg('图片上传失败: ' + e.message, 'err');
+  }
+}
+
+// 上传已有奖品的图片（从按钮触发）
+async function uploadPrizeImg(index) {
+  var prize = config.prizes[index];
+  
+  // 创建一个隐藏的文件输入框
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async function() {
+    if (!input.files || !input.files[0]) return;
+    var file = input.files[0];
+    
+    if (file.size > 2 * 1024 * 1024) {
+      showMsg('图片大小不能超过 2MB', 'err');
+      return;
+    }
+    
+    var ext = file.name.split('.').pop();
+    var timestamp = Date.now();
+    var fileName = 'prizes/img_' + timestamp + '.' + ext;
+    
+    showMsg('正在上传图片...', 'info');
+    
+    try {
+      var url = await uploadImageToGitHub(file, fileName);
+      config.prizes[index].img = fileName;
+      renderPrizes();
+      showMsg('图片上传成功！');
+    } catch (e) {
+      showMsg('图片上传失败: ' + e.message, 'err');
+    }
+  };
+  input.click();
+}
+
 // ====== 奖品管理 ======
+function editPrize(index) {
+  var prize = config.prizes[index];
+  $('editIndex').value = index;
+  $('editName').value = prize.name;
+  $('editLevel').value = prize.level;
+  $('editProb').value = prize.prob;
+  $('editImg').value = prize.img || '';
+  $('editImgPreview').classList.remove('show');
+  $('editImgUploadStatus').textContent = '';
+  
+  // 显示当前图片预览
+  if (prize.img) {
+    $('editImgPreview').src = BASE_URL + prize.img;
+    $('editImgPreview').classList.add('show');
+  }
+  
+  $('editModal').classList.add('show');
+}
+
+function closeEditModal() {
+  $('editModal').classList.remove('show');
+}
+
+function saveEditPrize() {
+  var index = parseInt($('editIndex').value);
+  var name = $('editName').value.trim();
+  var level = $('editLevel').value;
+  var prob = parseInt($('editProb').value) || 0;
+  var img = $('editImg').value.trim();
+  
+  if (!name) {
+    showMsg('请输入奖品名称', 'err');
+    return;
+  }
+  
+  config.prizes[index] = {
+    img: img,
+    name: name,
+    prob: prob,
+    level: level,
+    enabled: config.prizes[index].enabled
+  };
+  
+  closeEditModal();
+  renderPrizes();
+  showMsg('奖品已修改（需同步到线上才生效）');
+}
+
 function addPrize(){
   var name=$('newName').value.trim();
   var img=$('newImg').value.trim();
   var prob=parseInt($('newProb').value)||0;
   var level=$('newLevel').value;
   if(!name){showMsg('请输入奖品名称','err');return}
-  if(!img){showMsg('请输入图片路径','err');return}
+  
   config.prizes.push({img:img,name:name,prob:prob,level:level,enabled:true});
   renderPrizes();
   $('newName').value='';$('newImg').value='';$('newProb').value='0';
+  $('newImgPreview').classList.remove('show');
+  $('newImgUploadStatus').textContent='';
   showMsg('奖品已添加（需同步到线上才生效）');
 }
 
@@ -500,14 +748,14 @@ function resetAll(){
 function clearRecords(){resetAll()}
 
 function exportData(){
-  var data='时间,中奖情况\n';
+  var data='\u65f6\u95f4,\u4e2d\u5956\u60c5\u51b5\n';
   records.forEach(function(r){data+=r.date+' '+r.time+','+r.prize+'\n'});
   var blob=new Blob(['\uFEFF'+data],{type:'text/csv;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
-  a.href=url;a.download='抽奖记录_'+getToday()+'.csv';a.click();
+  a.href=url;a.download='\u62bd\u5956\u8bb0\u5f55_'+getToday()+'.csv';a.click();
   URL.revokeObjectURL(url);
-  showMsg('数据已导出');
+  showMsg('\u6570\u636e\u5df2\u5bfc\u51fa');
 }
 
 // ====== 账户 ======
@@ -517,25 +765,25 @@ function saveAccount(){
   account.token=$('ghToken').value.trim();
   account.repo=$('repoInfo').value.trim();
   localStorage.setItem('admin_account',JSON.stringify(account));
-  if(pwd){showMsg('密码已修改，请重新登录');setTimeout(doLogout,1500)}
-  else showMsg('账户设置已保存');
+  if(pwd){showMsg('\u5bc6\u7801\u5df2\u4fee\u6539\uff0c\u8bf7\u91cd\u65b0\u767b\u5f55');setTimeout(doLogout,1500)}
+  else showMsg('\u8d26\u6237\u8bbe\u7f6e\u5df2\u4fdd\u5b58');
 }
 
 async function testApi(){
-  if(!account.token){showMsg('请先输入 GitHub Token','err');return}
+  if(!account.token){showMsg('\u8bf7\u5148\u8f93\u5165 GitHub Token','err');return}
   var repo=account.repo||'740879648-png/Aubreylt';
-  $('apiTestResult').innerHTML='<span style="color:#666">测试中...</span>';
+  $('apiTestResult').innerHTML='<span style="color:#666">\u6d4b\u8bd5\u4e2d...</span>';
   try{
-    var resp=await fetch('https://api.github.com/repos/'+repo,{headers:{'Authorization':'token '+account.token}});
+    var resp=await fetch(GH_API+'/repos/'+repo,{headers:{'Authorization':'token '+account.token}});
     if(resp.ok){
       var json=await resp.json();
-      $('apiTestResult').innerHTML='<span style="color:#11998e">✅ 连接成功！仓库：'+json.full_name+'</span>';
+      $('apiTestResult').innerHTML='<span style="color:#11998e">\u2705 \u8fde\u63a5\u6210\u529f\uff01\u4ed3\u5e93\uff1a'+json.full_name+'</span>';
     } else {
       var err=await resp.json();
-      $('apiTestResult').innerHTML='<span style="color:#f5576c">❌ 失败：'+err.message+'</span>';
+      $('apiTestResult').innerHTML='<span style="color:#f5576c">\u274c \u5931\u8d25\uff1a'+err.message+'</span>';
     }
   } catch(e){
-    $('apiTestResult').innerHTML='<span style="color:#f5576c">❌ 网络错误</span>';
+    $('apiTestResult').innerHTML='<span style="color:#f5576c">\u274c \u7f51\u7edc\u9519\u8bef</span>';
   }
 }
 
