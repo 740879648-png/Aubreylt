@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>&#24184;&#36816;&#22823;&#25277;&#31070;</title>
+<title>幸运大抽奖</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:'Microsoft YaHei',sans-serif}
@@ -54,7 +54,7 @@ h1{color:#ffd700;margin-bottom:30px;font-size:32px;text-shadow:0 0 20px rgba(255
 </head>
 <body>
 <div class="wrap">
-<h1>&#24184;&#36816;&#22823;&#25277;&#31070;</h1>
+<h1>幸运大抽奖</h1>
 <div class="slot-machine">
 <div class="window">
 <div class="line"></div>
@@ -66,35 +66,35 @@ h1{color:#ffd700;margin-bottom:30px;font-size:32px;text-shadow:0 0 20px rgba(255
 </div>
 <div class="handle" id="handle" onclick="spin()"></div>
 </div>
-<button class="btn" id="btn" onclick="spin()">&#25277;&#31070;</button>
-<div class="tip">&#27599;&#20154;&#38480;&#25277;1&#27425; - 100%&#20013;&#31070;</div>
+<button class="btn" id="btn" onclick="spin()">抽奖</button>
+<div class="tip">每人限抽1次 - 100%中奖</div>
 </div>
 
 <div class="modal" id="modal1">
 <div class="content">
-<h2>&#24688;&#21916;&#20013;&#31070;</h2>
+<h2>恭喜中奖</h2>
 <div class="prize-img" id="prizeImg"></div>
 <div class="prize-name" id="prizeName"></div>
-<p>&#35831;&#28155;&#21160;&#23454;&#25945;&#24072;&#39044;&#21462;&#21697;</p>
-<button class="next-btn" onclick="showQRCode()">&#28155;&#21160;&#23454;&#25945;&#24072;</button>
+<p>请添加实操老师领取奖品</p>
+<button class="next-btn" onclick="showQRCode()">添加实操老师</button>
 </div>
 </div>
 
 <div class="modal" id="modal2">
 <div class="content">
-<h2>&#25195;&#30721;&#28155;&#21160;&#23454;&#25945;&#24072;</h2>
+<h2>扫码添加实操老师</h2>
 <div class="qr-box">
 <img src="https://740879648-png.github.io/Aubreylt/qrcode.jpg" alt="QR">
 </div>
-<p>&#38271;&#25353;&#20445;&#23384;&#20108;&#32500;&#30721;&#65292;&#25195;&#30721;&#28155;&#21160;&#23454;&#25945;&#24072;</p>
-<p class="tip-text">&#35831;&#22312;24&#23567;&#26102;&#20869;&#28155;&#21160;&#65292;&#36807;&#26399;&#20316;&#24223;</p>
-<button class="close" onclick="closeAll()">&#25105;&#30693;&#36947;&#20102;</button>
+<p>长按保存二维码，扫码添加实操老师</p>
+<p class="tip-text">请在24小时内添加，过期作废</p>
+<button class="close" onclick="closeAll()">我知道了</button>
 </div>
 </div>
 
 <script>
 var prizes = [
-{img:'prizes/ai-tool.jpg',name:'&#19968;&#31561;&#31070; - AI&#24037;&#20855;&#21253;&#65288;&#20215;&#20540;2690&#20803;&#65289',prob:1}
+{img:'prizes/ai-tool.jpg',name:'一等奖 - AI工具包（价值2690元）',prob:1}
 ];
 
 var baseUrl = 'https://740879648-png.github.io/Aubreylt/';
@@ -113,8 +113,8 @@ function init() {
 var btn = document.getElementById('btn');
 if (drawn) {
 btn.disabled = true;
-btn.innerHTML = '&#24050;&#25277;&#31070;';
-document.querySelector('.tip').innerHTML = '&#24744;&#24050;&#21442;&#19982;&#36807;&#25277;&#31070;';
+btn.textContent = '已抽奖';
+document.querySelector('.tip').textContent = '您已参与过抽奖';
 }
 prizes.forEach(function(p, i) {
 ['strip1','strip2','strip3'].forEach(function(id) {
@@ -130,12 +130,12 @@ if (drawn) showResult(0);
 
 function spin() {
 if (spinning) return;
-if (drawn) {alert('\u60A8\u5DF2\u53C2\u4E0E\u8FC7\u62BD\u5956\uFF01');return;}
+if (drawn) {alert('您已参与过抽奖！');return;}
 spinning = true;
 var btn = document.getElementById('btn');
 var handle = document.getElementById('handle');
 btn.disabled = true;
-btn.innerHTML = '\u62BD\u5956\u4E2D...';
+btn.textContent = '抽奖中...';
 handle.classList.add('pull');
 setTimeout(function(){handle.classList.remove('pull')},300);
 
@@ -161,8 +161,8 @@ strip.style.transform = 'translateY(' + targetY + 'px)';
 setTimeout(function() {
 drawn = true;
 localStorage.setItem('lottery_v4', 'yes');
-btn.innerHTML = '\u5DF2\u62BD\u5956';
-document.querySelector('.tip').innerHTML = '\u60A8\u5DF2\u53C2\u4E0E\u8FC7\u62BD\u5956';
+btn.textContent = '已抽奖';
+document.querySelector('.tip').textContent = '您已参与过抽奖';
 showResult(idx);
 spinning = false;
 }, scrollDuration + 1500);
@@ -171,7 +171,7 @@ spinning = false;
 function showResult(idx) {
 var p = prizes[idx];
 document.getElementById('prizeImg').innerHTML = '<img src="' + baseUrl + p.img + '">';
-document.getElementById('prizeName').innerHTML = p.name;
+document.getElementById('prizeName').textContent = p.name;
 document.getElementById('modal1').classList.add('show');
 }
 
